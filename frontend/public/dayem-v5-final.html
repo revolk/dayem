@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="دايم — منصة التجارة الإلكترونية الأولى للتاجر المصري. متجرك أونلاين في 5 دقايق من واتساب.">
+<title>DAYEM ∞ — تجارتك بدون قيود</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   DAYEM ∞ — PRODUCTION FINAL v5
+   All fixes:
+   ✓ Smart nav color detection (beige/navy aware)
+   ✓ RTL hero absolute positioning
+   ✓ WA demo plays on hover
+   ✓ Flow cards expand on hover
+   ✓ Features with decorative numbers
+   ✓ Roadmap timeline design
+   ✓ New pricing (100/199/349)
+   ✓ Refined float buttons
+   ✓ Performance optimized
+═══════════════════════════════════════════════════ */
+:root{
+  --N:  #0C2540;
+  --N2: #113459;
+  --N3: #1A4A7A;
+  --G:  #D4AF37;
+  --G2: #F0D060;
+  --G3: #A88C2A;
+  --B:  #F4EDE0;
+  --B2: #EDE3D0;
+  --B3: #FAF7F2;
+  --W:  #FFFFFF;
+  --e:  cubic-bezier(.16,1,.3,1);
+  --tj: 'Tajawal',sans-serif;
+  --pf: 'Playfair Display',Georgia,serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--B3);color:var(--N);font-family:var(--tj);overflow-x:hidden;cursor:none;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--N);}
+::-webkit-scrollbar-thumb{background:var(--G);}
+@media(hover:none),(max-width:768px){*{cursor:auto!important;}body,button,a,div{cursor:auto!important;pointer-events:auto!important;}}
+
+/* ══ CURSOR ══ */
+#cur{position:fixed;z-index:9999;pointer-events:none;width:8px;height:8px;background:var(--G);border-radius:50%;top:-30px;left:-30px;transition:transform .12s,background .2s;}
+#cur.hov{transform:scale(2.2);}
+#cr{position:fixed;z-index:9998;pointer-events:none;width:34px;height:34px;border:1.5px solid rgba(212,175,55,.4);border-radius:50%;top:-30px;left:-30px;transition:width .25s var(--e),height .25s var(--e),border-color .25s;}
+#cr.hov{width:50px;height:50px;border-color:rgba(212,175,55,.7);}
+@media(hover:none),(max-width:768px){#cur,#cr{display:none!important;}}
+
+/* ══ FLOAT BUTTONS — refined ══ */
+.fab{
+  position:fixed;right:24px;z-index:700;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  bottom:24px;
+}
+.fab-btn{
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:none;cursor:none;
+  transition:transform .25s var(--e),box-shadow .25s,opacity .3s,visibility .3s;
+  opacity:0;visibility:hidden;
+}
+.fab-btn.on{opacity:1;visibility:visible;}
+.fab-wa{background:#25D366;font-size:1.3rem;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.3);}
+.fab-wa:hover{transform:translateY(-3px) scale(1.08);box-shadow:0 8px 28px rgba(37,211,102,.5);}
+.fab-top{background:var(--N2);color:var(--G);font-size:1rem;font-weight:900;border:1.5px solid rgba(212,175,55,.3);box-shadow:0 4px 20px rgba(12,37,64,.3);}
+.fab-top:hover{transform:translateY(-3px);background:var(--G);color:var(--N);box-shadow:0 8px 28px rgba(212,175,55,.4);}
+@media(max-width:768px){.fab-btn{cursor:pointer;width:50px;height:50px;}.fab{right:14px;bottom:14px;}}
+
+/* ══ NAV BUTTONS ══ */
+.nav-login{background:rgba(212,175,55,.08);color:rgba(255,255,255,.85);border:1.5px solid rgba(212,175,55,.35);padding:10px 20px;font-family:var(--tj);font-size:.73rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.nav-login:hover{background:rgba(212,175,55,.18);color:#fff;border-color:var(--G);}
+.nav-register{background:var(--G);color:var(--N);padding:10px 20px;font-family:var(--tj);font-size:.73rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;transition:all .25s;}
+.nav-register:hover{background:var(--G2);box-shadow:0 6px 22px rgba(212,175,55,.4);transform:translateY(-1px);}
+/* ══ NAV — smart color ══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  padding:18px 5%;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:all .45s var(--e);
+  border-bottom:1px solid transparent;
+}
+/* Dark nav (on navy sections or scrolled) */
+nav.dark{
+  background:rgba(12,37,64,.97);
+  border-bottom-color:rgba(212,175,55,.15);
+  box-shadow:0 2px 40px rgba(0,0,0,.2);
+  padding:11px 5%;
+}
+/* Light nav (on beige sections, not scrolled) */
+nav.light .n-ar{color:var(--N)!important;}
+nav.light .nls a{color:rgba(12,37,64,.9)!important;font-weight:800;}
+nav.light .nls a:hover{color:var(--N2)!important;}
+nav.light .nb{border-color:var(--N2)!important;}
+nav.light .nb i{color:var(--N2)!important;}
+nav.light .ncta{background:var(--N);color:var(--W);}
+nav.light .n-en{color:var(--G3)!important;}
+
+.nl{display:flex;align-items:center;gap:11px;text-decoration:none;}
+.nb{width:40px;height:40px;flex-shrink:0;border:1.5px solid var(--G);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--G);position:relative;overflow:hidden;transition:all .3s;}
+.nb::before{content:'';position:absolute;inset:0;background:var(--G);transform:scaleY(0);transform-origin:bottom;transition:transform .4s var(--e);}
+.nl:hover .nb::before{transform:scaleY(1);}
+.nb i{position:relative;z-index:1;font-style:normal;transition:color .3s;}
+.nl:hover .nb i{color:var(--N);}
+.nt{display:flex;flex-direction:column;gap:1px;}
+.n-ar{font-family:var(--tj);font-size:1.1rem;font-weight:900;color:var(--W);letter-spacing:2px;line-height:1.1;transition:color .3s;}
+.n-en{font-size:.48rem;letter-spacing:4px;color:var(--G);text-transform:uppercase;font-weight:700;transition:color .3s;}
+.nr{display:flex;align-items:center;gap:20px;}
+.nls{display:flex;gap:24px;list-style:none;}
+.nls a{font-size:.72rem;font-weight:600;letter-spacing:1.5px;color:rgba(255,255,255,.82);text-decoration:none;text-transform:uppercase;transition:color .25s;font-weight:700;position:relative;}
+.nls a::after{content:'';position:absolute;bottom:-3px;right:0;left:0;height:1px;background:var(--G);transform:scaleX(0);transition:transform .32s var(--e);}
+.nls a:hover{color:var(--G);}
+.nls a:hover::after{transform:scaleX(1);}
+.ncta{background:var(--G);color:var(--N);border:none;padding:10px 20px;font-family:var(--tj);font-size:.73rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:all .25s;}
+.ncta:hover{background:var(--G2);box-shadow:0 6px 22px rgba(212,175,55,.35);transform:translateY(-1px);}
+.nham{display:none;flex-direction:column;gap:5px;background:transparent;border:1.5px solid rgba(212,175,55,.38);width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer!important;-webkit-tap-highlight-color:rgba(212,175,55,.2);touch-action:manipulation;}
+.nham span{width:18px;height:1.5px;background:var(--G);display:block;transition:all .3s;}
+
+
+.mc{position:absolute;top:20px;left:20px;background:transparent;border:1.5px solid rgba(212,175,55,.28);width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--G);cursor:pointer;}
+@media(max-width:768px){.nls,.ncta,.nav-login,.nav-register{display:none!important;}.nham{display:flex;}}
+
+/* ══ HERO — absolute RTL fix ══ */
+.hero{position:relative;height:100vh;min-height:600px;overflow:hidden;}
+.hbg-b{position:absolute;top:0;right:0;width:50%;height:100%;background:var(--B3);z-index:0;}
+.hbg-n{position:absolute;top:0;left:0;width:50%;height:100%;background:var(--N2);z-index:0;}
+.hseam{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:2px;background:linear-gradient(180deg,transparent,var(--G) 18%,var(--G) 82%,transparent);z-index:4;}
+.hm{position:absolute;top:0;right:0;width:50%;height:100%;z-index:5;display:flex;flex-direction:column;justify-content:center;padding:0 7% 0 4%;padding-top:68px;}
+.hb{position:absolute;top:0;left:0;width:50%;height:100%;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:68px 7%;}
+/* Merchant side */
+.hey{display:inline-flex;align-items:center;gap:9px;margin-bottom:22px;animation:fUp .7s ease .15s both;}
+.hey-l{width:26px;height:2px;background:var(--N2);flex-shrink:0;}
+.hey-t{font-size:.55rem;letter-spacing:4px;color:var(--N2);text-transform:uppercase;font-weight:800;}
+.ht1{font-family:var(--tj);font-size:clamp(2.3rem,3.6vw,3.6rem);font-weight:900;color:var(--N);line-height:1.1;margin-bottom:6px;animation:fUp .7s ease .28s both;}
+.ht2{font-family:var(--pf);font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;font-style:italic;color:var(--G3);line-height:1.05;margin-bottom:18px;animation:fUp .7s ease .4s both;}
+.hrule{width:52px;height:2px;background:linear-gradient(90deg,var(--N2),var(--G));margin-bottom:16px;animation:fUp .7s ease .5s both;}
+.hdesc{font-size:.88rem;font-weight:300;color:rgba(12,37,64,.55);line-height:1.9;max-width:380px;margin-bottom:34px;animation:fUp .7s ease .6s both;}
+.hdesc b{color:var(--N2);font-weight:700;}
+.hbtns{display:flex;gap:10px;flex-wrap:wrap;animation:fUp .7s ease .72s both;}
+.btn-fill{background:var(--N);color:var(--W);border:none;padding:13px 28px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .35s;}
+.btn-fill::after{content:'';position:absolute;inset:0;background:var(--G);transform:scaleX(0);transform-origin:left;transition:transform .32s var(--e);}
+.btn-fill:hover::after{transform:scaleX(1);}
+.btn-fill:hover{color:var(--N);}
+.btn-fill span{position:relative;z-index:1;}
+.btn-ghost{background:transparent;color:rgba(12,37,64,.48);border:none;padding:13px 0;font-family:var(--tj);font-size:.78rem;font-weight:600;cursor:none;transition:color .22s;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(12,37,64,.14);}
+.btn-ghost:hover{color:var(--N);text-decoration-color:var(--G);}
+.hstats{display:flex;gap:0;margin-top:40px;padding-top:24px;border-top:1px solid rgba(17,52,89,.1);animation:fUp .7s ease .88s both;}
+.hs{flex:1;padding-left:16px;border-left:1px solid rgba(17,52,89,.08);}
+.hs:first-child{padding-left:0;border-left:none;}
+.hsn{font-family:var(--pf);font-size:1.75rem;font-weight:700;color:var(--N2);display:block;line-height:1;margin-bottom:4px;}
+.hsl{font-size:.54rem;letter-spacing:2px;color:rgba(12,37,64,.36);text-transform:uppercase;}
+/* Brand side */
+.bglow{position:absolute;width:340px;height:340px;background:radial-gradient(circle,rgba(212,175,55,.07) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.bdb{text-align:center;position:relative;z-index:2;animation:fIn .9s ease .45s both;}
+@keyframes fIn{from{opacity:0;}to{opacity:1;}}
+.bdb-box{border:1px solid rgba(212,175,55,.18);padding:40px 44px;background:rgba(255,255,255,.018);position:relative;}
+.bdb-box::before{content:'';position:absolute;top:-1px;right:-1px;width:32px;height:32px;border-top:2px solid var(--G);border-right:2px solid var(--G);}
+.bdb-box::after{content:'';position:absolute;bottom:-1px;left:-1px;width:32px;height:32px;border-bottom:2px solid var(--G);border-left:2px solid var(--G);}
+.bdb-ar{font-family:var(--tj);font-size:clamp(3.2rem,5.5vw,5.2rem);font-weight:900;color:var(--W);letter-spacing:4px;display:block;line-height:1;margin-bottom:6px;}
+.bdb-sub{font-size:.72rem;font-weight:300;color:rgba(255,255,255,.26);letter-spacing:5px;display:block;margin-bottom:24px;}
+.bdb-inf{display:block;font-size:clamp(3.5rem,6.5vw,6.5rem);color:var(--G);line-height:.85;margin-bottom:24px;text-shadow:0 0 28px rgba(212,175,55,.3);animation:ig 3s ease-in-out infinite;}
+@keyframes ig{0%,100%{text-shadow:0 0 18px rgba(212,175,55,.22);opacity:.9;}50%{text-shadow:0 0 46px rgba(212,175,55,.6);opacity:1;}}
+.bdb-en{font-family:var(--pf);font-size:1.45rem;font-weight:700;color:var(--W);letter-spacing:8px;display:block;margin-bottom:4px;text-transform:uppercase;}
+.bdb-tag{font-size:.5rem;letter-spacing:6px;color:var(--G);text-transform:uppercase;font-weight:700;display:block;}
+.bpills{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.bp{background:rgba(212,175,55,.09);border:1px solid rgba(212,175,55,.2);padding:4px 11px;font-size:.52rem;letter-spacing:2px;color:var(--G);text-transform:uppercase;font-weight:700;}
+.scue{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;z-index:6;animation:fUp .7s ease 1.1s both;}
+.scue-l{width:1px;height:36px;background:linear-gradient(180deg,var(--G),transparent);animation:sp 2s ease-in-out infinite;}
+@keyframes sp{0%,100%{opacity:1;transform:scaleY(1);}50%{opacity:.26;transform:scaleY(.46);}}
+.scue-t{font-size:.48rem;letter-spacing:4px;color:var(--G);text-transform:uppercase;}
+@media(max-width:860px){
+  .hero{height:auto;min-height:auto;}
+  .hbg-b,.hbg-n,.hseam{display:none;}
+  .hm,.hb{position:static;width:100%;height:auto;}
+  .hm{padding:96px 5% 44px;background:var(--B3);}
+  .hb{padding:40px 5% 52px;background:var(--N2);}
+  .hstats{flex-wrap:wrap;gap:14px;margin-top:28px;padding-top:18px;}
+  .hs{border:none;padding:0;}
+  .scue,.hseam{display:none;}
+  .btn-fill,.btn-ghost,.ncta{cursor:pointer;}
+}
+
+/* ══ TICKER ══ */
+.ticker{height:44px;background:var(--N2);display:flex;align-items:center;overflow:hidden;border-top:1px solid rgba(212,175,55,.16);border-bottom:1px solid rgba(212,175,55,.16);}
+.tk-t{display:flex;gap:56px;animation:tkS 32s linear infinite;white-space:nowrap;padding-right:56px;}
+@keyframes tkS{to{transform:translateX(-50%);}}
+.tki{display:flex;align-items:center;gap:12px;font-size:.58rem;letter-spacing:3px;color:rgba(255,255,255,.36);text-transform:uppercase;font-weight:700;flex-shrink:0;}
+.tkg{width:5px;height:5px;background:var(--G);transform:rotate(45deg);flex-shrink:0;}
+
+/* ══ SHARED ══ */
+.sec{padding:104px 5%;}
+.si{max-width:1200px;margin:0 auto;}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s var(--e),transform .6s var(--e);}
+.rv.on{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.08s;}.d2{transition-delay:.15s;}.d3{transition-delay:.22s;}.d4{transition-delay:.3s;}
+.eyb{display:flex;align-items:center;gap:11px;margin-bottom:14px;}
+.eyb-l{width:36px;height:2px;background:var(--G);flex-shrink:0;}
+.eyb-t{font-size:.56rem;letter-spacing:4px;text-transform:uppercase;font-weight:800;}
+.eyb-t.lt{color:var(--N2);}
+.eyb-t.dk{color:var(--G);}
+.sh{font-family:var(--tj);font-size:clamp(1.9rem,3vw,2.8rem);font-weight:900;line-height:1.12;}
+.sh.lt{color:var(--N);}
+.sh.dk{color:var(--W);}
+.sh em{font-family:var(--pf);font-style:italic;}
+.sh.lt em{color:var(--N2);}
+.sh.dk em{color:var(--G);}
+.sp{font-size:.86rem;font-weight:300;line-height:1.92;margin-top:10px;max-width:480px;}
+.sp.lt{color:rgba(12,37,64,.48);}
+.sp.dk{color:rgba(255,255,255,.36);}
+@media(max-width:768px){.sec{padding:72px 5%;}}
+
+/* ══ PROBLEM ══ */
+.pbg{background:var(--B);border-top:1px solid rgba(17,52,89,.07);}
+.pwrap{display:grid;grid-template-columns:300px 1fr;gap:72px;align-items:start;}
+.pside{position:sticky;top:104px;}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(17,52,89,.07);}
+.pc{background:var(--W);padding:32px 28px;transition:transform .4s var(--e),box-shadow .4s,background .28s;position:relative;overflow:hidden;cursor:default;}
+.pc::after{content:'';position:absolute;bottom:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--N2),var(--G));transform:scaleX(0);transform-origin:right;transition:transform .42s var(--e);}
+.pc:hover{transform:translateY(-5px);box-shadow:0 14px 44px rgba(17,52,89,.09);background:var(--B3);}
+.pc:hover::after{transform:scaleX(1);}
+.pcn{font-family:var(--pf);font-size:2.6rem;font-weight:400;color:rgba(17,52,89,.06);line-height:1;margin-bottom:12px;display:block;}
+.pct{font-family:var(--tj);font-size:.93rem;font-weight:800;color:var(--N);margin-bottom:7px;}
+.pcb{font-size:.77rem;font-weight:300;color:rgba(12,37,64,.5);line-height:1.8;}
+.pctag{display:inline-block;margin-top:9px;background:var(--N);color:var(--G);font-size:.52rem;letter-spacing:2px;padding:3px 10px;font-weight:700;text-transform:uppercase;}
+@media(max-width:980px){.pwrap{grid-template-columns:1fr;gap:38px;}.pside{position:static;}}
+@media(max-width:540px){.pgrid{grid-template-columns:1fr;}}
+
+/* ══ SOLUTION — flow cards with expand ══ */
+.sbg{background:var(--N);border-top:1px solid rgba(212,175,55,.11);}
+.stop{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:60px;align-items:end;}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(212,175,55,.09);}
+.fc{
+  background:rgba(255,255,255,.022);
+  padding:28px 16px;
+  text-align:center;
+  position:relative;overflow:hidden;cursor:default;
+  transition:background .35s,padding .4s var(--e);
+}
+.fc::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:var(--G);transform:scaleX(0);transition:transform .35s var(--e);}
+.fc:hover{background:rgba(255,255,255,.06);padding-bottom:36px;}
+.fc:hover::before{transform:scaleX(1);}
+.fc:hover .fcd-expand{max-height:100px;opacity:1;margin-top:10px;}
+.fci{width:58px;height:58px;border-radius:50%;border:1px solid rgba(212,175,55,.18);background:rgba(255,255,255,.02);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.3rem;transition:all .32s;}
+.fc:hover .fci{border-color:var(--G);background:rgba(212,175,55,.08);transform:scale(1.1);}
+.fcn{font-size:.56rem;color:var(--G);font-weight:700;margin-bottom:6px;display:block;letter-spacing:1px;}
+.fct{font-size:.8rem;font-weight:800;color:var(--W);margin-bottom:4px;line-height:1.22;}
+.fcd{font-size:.68rem;font-weight:300;color:rgba(255,255,255,.35);line-height:1.55;}
+/* Expandable description on hover */
+.fcd-expand{font-size:.66rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.6;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s var(--e),opacity .4s,margin-top .4s;}
+@media(max-width:840px){.stop{grid-template-columns:1fr;gap:36px;}.flow{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.flow{grid-template-columns:1fr;}}
+
+/* ══ WHATSAPP — hover replay ══ */
+.wabg{background:var(--N2);border-top:1px solid rgba(212,175,55,.11);position:relative;overflow:hidden;}
+.wabg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 65% at 22% 50%,rgba(212,175,55,.042),transparent 68%);pointer-events:none;}
+.wawrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.waph{max-width:280px;margin:0 auto;background:#0a1520;border:1px solid rgba(212,175,55,.17);border-radius:22px;overflow:hidden;box-shadow:0 48px 96px rgba(0,0,0,.48),0 0 0 1px rgba(212,175,55,.055);position:relative;z-index:2;transition:box-shadow .3s;}
+.waph:hover{box-shadow:0 56px 110px rgba(0,0,0,.55),0 0 0 1px rgba(212,175,55,.12),0 0 40px rgba(212,175,55,.08);}
+.wpb{background:#0f1e2e;padding:7px 15px;display:flex;justify-content:space-between;}
+.wpb span{font-size:.56rem;color:rgba(255,255,255,.36);}
+.wph2{background:#0d2a1a;padding:11px 13px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(37,211,102,.09);}
+.wpav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--G),#8B6914);display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0;}
+.wpnm{font-size:.77rem;font-weight:700;color:var(--W);}
+.wpst{font-size:.54rem;color:#25D366;}
+.wpmsgs{padding:11px;background:#0a160a;display:flex;flex-direction:column;gap:7px;min-height:260px;max-height:300px;overflow-y:auto;overflow-x:hidden;}
+.wm{max-width:86%;padding:8px 11px;font-size:.68rem;line-height:1.48;border-radius:10px;opacity:0;transform:translateY(6px);transition:opacity .32s,transform .32s;}
+.wm.show{opacity:1;transform:translateY(0);}
+.wm.i{background:#192a19;border-radius:0 10px 10px 10px;align-self:flex-start;color:rgba(255,255,255,.76);}
+.wm.o{background:#1a3a6a;border-radius:10px 0 10px 10px;align-self:flex-end;color:var(--W);}
+.wmt{font-size:.5rem;color:rgba(255,255,255,.2);margin-top:3px;}
+.wm.o .wmt{text-align:left;}
+.wmcard{background:rgba(212,175,55,.065);border:1px solid rgba(212,175,55,.16);border-radius:7px;padding:9px;margin-top:4px;}
+.wmch{font-size:.66rem;font-weight:700;color:var(--G);margin-bottom:2px;}
+.wmcu{font-size:.58rem;color:#4A8FE0;margin-bottom:2px;}
+.wmcs{font-size:.54rem;color:rgba(255,255,255,.26);}
+.wptyp{display:none;align-items:center;gap:4px;padding:8px 12px;background:#192a19;border-radius:0 10px 10px 10px;align-self:flex-start;}
+.wptyp.show{display:flex;}
+.wptyp span{width:6px;height:6px;background:rgba(255,255,255,.36);border-radius:50%;animation:tb 1.4s infinite;}
+.wptyp span:nth-child(2){animation-delay:.2s;}
+.wptyp span:nth-child(3){animation-delay:.4s;}
+@keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.wpinp{background:#0d2a1a;padding:8px 11px;display:flex;gap:7px;align-items:center;}
+.wpinp input{flex:1;background:rgba(255,255,255,.048);border:none;border-radius:15px;padding:6px 10px;font-size:.66rem;color:rgba(255,255,255,.42);outline:none;}
+.wpsnd{width:27px;height:27px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.66rem;flex-shrink:0;}
+.wasts{position:relative;z-index:2;}
+.wst{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.038);transition:all .22s;}
+.wst:last-child{border:none;}
+.wst:hover .wstic{border-color:var(--G);background:rgba(212,175,55,.07);}
+.wstic{width:35px;height:35px;border-radius:50%;border:1px solid rgba(212,175,55,.17);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;transition:all .32s;}
+.wstt{font-family:var(--tj);font-size:.82rem;font-weight:700;color:var(--W);margin-bottom:2px;}
+.wstd{font-size:.68rem;color:rgba(255,255,255,.32);line-height:1.6;font-weight:300;}
+@media(max-width:840px){.wawrap{grid-template-columns:1fr;}.waph{max-width:305px;}.wasts{order:-1;}}
+
+/* ══ NUMBERS ══ */
+.nubg{background:var(--B3);border-top:1px solid rgba(17,52,89,.07);}
+.nuh{font-family:var(--tj);font-size:.72rem;font-weight:800;letter-spacing:5px;color:var(--N2);text-transform:uppercase;text-align:center;margin-bottom:52px;display:flex;align-items:center;justify-content:center;gap:13px;}
+.nuh::before,.nuh::after{content:'';flex:1;max-width:72px;height:2px;background:var(--G);}
+.nugrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(17,52,89,.07);max-width:860px;margin:0 auto;}
+.ng{background:var(--W);padding:38px 22px;text-align:center;transition:background .32s,transform .32s,box-shadow .32s;cursor:default;}
+.ng:hover{background:var(--N);transform:translateY(-4px);box-shadow:0 12px 40px rgba(17,52,89,.14);}
+.ng:hover .ngn{color:var(--G);}
+.ng:hover .ngl{color:rgba(255,255,255,.34);}
+.ngn{font-family:var(--pf);font-size:2.8rem;font-weight:700;color:var(--N);line-height:1;display:block;margin-bottom:7px;transition:color .32s;}
+.ngl{font-size:.54rem;letter-spacing:3px;color:rgba(12,37,64,.36);text-transform:uppercase;transition:color .32s;}
+@media(max-width:560px){.nugrid{grid-template-columns:1fr 1fr;}}
+
+/* ══ FEATURES — with decorative numbers ══ */
+.fbg{background:var(--W);border-top:1px solid var(--B);}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:auto auto;gap:1px;background:var(--B);margin-top:52px;}
+.fg{background:var(--B3);padding:38px 32px;transition:transform .4s var(--e),box-shadow .4s,background .28s;position:relative;overflow:hidden;cursor:default;}
+.fg::after{content:'';position:absolute;bottom:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--N2),var(--G));transform:scaleX(0);transform-origin:right;transition:transform .42s var(--e);}
+.fg:hover{transform:translateY(-4px);box-shadow:0 14px 44px rgba(17,52,89,.07);background:var(--W);}
+.fg:hover::after{transform:scaleX(1);}
+/* Decorative number */
+.fg::before{
+  content:attr(data-n);
+  position:absolute;top:-10px;left:16px;
+  font-family:var(--pf);font-size:5rem;font-weight:700;
+  color:rgba(17,52,89,.04);line-height:1;
+  pointer-events:none;
+  transition:color .3s;
+}
+.fg:hover::before{color:rgba(212,175,55,.06);}
+.fg.tall{grid-row:span 2;}
+.fg.tall::before{font-size:8rem;}
+.fgic{font-size:1.5rem;margin-bottom:14px;display:block;position:relative;z-index:1;}
+.fgt{font-family:var(--tj);font-size:.95rem;font-weight:800;color:var(--N);margin-bottom:8px;position:relative;z-index:1;}
+.fgd{font-size:.77rem;color:rgba(12,37,64,.46);line-height:1.82;font-weight:300;position:relative;z-index:1;}
+.fgb{display:inline-block;margin-top:13px;background:var(--N);color:var(--G);font-size:.51rem;letter-spacing:2px;padding:4px 11px;font-weight:700;text-transform:uppercase;position:relative;z-index:1;}
+@media(max-width:840px){.fgrid{grid-template-columns:1fr;}.fg.tall{grid-row:auto;}}
+
+/* ══ PRICING — new structure ══ */
+.prbg{background:var(--N);border-top:1px solid rgba(212,175,55,.11);}
+.prgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(212,175,55,.09);margin-top:52px;}
+.prc{background:rgba(255,255,255,.022);padding:44px 32px;position:relative;transition:background .3s;overflow:hidden;cursor:default;}
+.prc::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:var(--G);transform:scaleX(0);transition:transform .42s var(--e);}
+.prc:hover::before{transform:scaleX(1);}
+.prc:hover{background:rgba(255,255,255,.048);}
+.prc.hot{background:rgba(212,175,55,.07);}
+.prcbadge{position:absolute;top:0;right:50%;transform:translateX(50%);background:var(--G);color:var(--N);font-size:.52rem;font-weight:800;padding:4px 15px;letter-spacing:2px;text-transform:uppercase;}
+.prcname{font-size:.54rem;letter-spacing:4px;color:rgba(255,255,255,.26);text-transform:uppercase;font-weight:800;margin-bottom:12px;}
+.prc.hot .prcname{margin-top:14px;}
+.prcprice{font-family:var(--pf);font-size:3.5rem;font-weight:700;color:var(--W);line-height:1;}
+.prcprice sub{font-family:var(--tj);font-size:.75rem;font-weight:300;color:rgba(255,255,255,.26);vertical-align:baseline;}
+.prcdesc{font-size:.72rem;color:rgba(255,255,255,.35);font-weight:300;margin-top:8px;margin-bottom:0;line-height:1.6;}
+.prcdiv{height:1px;background:rgba(255,255,255,.055);margin:20px 0;}
+.prcf{display:flex;align-items:center;gap:9px;font-size:.77rem;color:rgba(255,255,255,.46);margin-bottom:9px;font-weight:300;}
+.prcf::before{content:'';width:12px;height:1px;background:var(--G);flex-shrink:0;}
+.prcbtn{width:100%;padding:12px;font-family:var(--tj);font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:all .28s;margin-top:20px;border:none;}
+.prcbtn.ol{background:transparent;border:1.5px solid rgba(212,175,55,.2);color:rgba(255,255,255,.36);}
+.prcbtn.ol:hover{border-color:var(--G);color:var(--G);}
+.prcbtn.fl{background:var(--G);color:var(--N);}
+.prcbtn.fl:hover{background:var(--G2);box-shadow:0 8px 26px rgba(212,175,55,.26);}
+@media(max-width:720px){.prgrid{grid-template-columns:1fr;}.prcbtn{cursor:pointer;}}
+
+/* ══ INVESTOR — timeline roadmap ══ */
+.invbg{background:var(--B);border-top:1px solid rgba(17,52,89,.07);}
+.invwrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:52px;}
+.invnums{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(17,52,89,.07);}
+.inn{background:var(--W);padding:28px 24px;transition:background .32s,transform .28s;cursor:default;}
+.inn:hover{background:var(--N);transform:translateY(-3px);}
+.inn:hover .innn{color:var(--G);}
+.inn:hover .innl{color:rgba(255,255,255,.33);}
+.innn{font-family:var(--pf);font-size:2.3rem;font-weight:700;color:var(--N);line-height:1;display:block;margin-bottom:5px;transition:color .32s;}
+.innl{font-size:.53rem;letter-spacing:2px;color:rgba(12,37,64,.36);text-transform:uppercase;transition:color .32s;}
+/* Timeline roadmap */
+.rm-title{display:flex;align-items:center;gap:11px;margin-bottom:28px;}
+.rm-title-l{width:36px;height:2px;background:var(--G);}
+.rm-title-t{font-size:.56rem;letter-spacing:4px;color:var(--N2);text-transform:uppercase;font-weight:800;}
+.rm{position:relative;padding-right:20px;}
+.rm::before{content:'';position:absolute;right:3px;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,var(--G),rgba(212,175,55,.2));}
+.rmi{padding:0 28px 28px 0;position:relative;}
+.rmi:last-child{padding-bottom:0;}
+.rmid{
+  position:absolute;right:-5px;top:6px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--G);
+  box-shadow:0 0 0 3px var(--B),0 0 0 5px rgba(212,175,55,.2);
+  z-index:1;
+}
+.rmiq{font-size:.52rem;letter-spacing:3px;color:var(--G3);text-transform:uppercase;font-weight:800;margin-bottom:3px;display:block;}
+.rmit{font-family:var(--tj);font-size:.9rem;font-weight:800;color:var(--N);margin-bottom:4px;}
+.rmib{font-size:.73rem;color:rgba(12,37,64,.46);line-height:1.62;font-weight:300;}
+@media(max-width:720px){.invwrap{grid-template-columns:1fr;}}
+
+/* ══ CTA ══ */
+.ctabg{background:linear-gradient(145deg,var(--N) 0%,var(--N2) 55%,var(--N3) 100%);padding:140px 5%;text-align:center;position:relative;overflow:hidden;border-top:1px solid rgba(212,175,55,.13);}
+.ctabg::before{content:'∞';position:absolute;font-size:46vw;color:rgba(212,175,55,.028);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:.8;font-family:serif;}
+.ctaframe{position:absolute;inset:26px;border:1px solid rgba(212,175,55,.08);pointer-events:none;}
+.ctaframe::before{content:'';position:absolute;top:-1px;right:-1px;width:40px;height:40px;border-top:2px solid var(--G);border-right:2px solid var(--G);}
+.ctaframe::after{content:'';position:absolute;bottom:-1px;left:-1px;width:40px;height:40px;border-bottom:2px solid var(--G);border-left:2px solid var(--G);}
+.ctaey{font-size:.52rem;letter-spacing:5px;color:var(--G);text-transform:uppercase;font-weight:800;display:block;margin-bottom:18px;position:relative;z-index:2;}
+.ctah{font-family:var(--tj);font-size:clamp(2.6rem,5.2vw,4.5rem);font-weight:900;color:var(--W);line-height:1.1;margin-bottom:12px;position:relative;z-index:2;}
+.ctah em{font-family:var(--pf);font-style:italic;color:var(--G);}
+.ctap{font-size:.86rem;color:rgba(255,255,255,.32);margin-bottom:42px;position:relative;z-index:2;font-weight:300;}
+.ctabtns{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;}
+.btng{background:var(--G);color:var(--N);border:none;padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:background .22s,box-shadow .22s,transform .18s;}
+.btng:hover{background:var(--G2);transform:translateY(-2px);box-shadow:0 9px 28px rgba(212,175,55,.26);}
+.btno{background:transparent;color:rgba(255,255,255,.43);border:1.5px solid rgba(212,175,55,.23);padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:border-color .22s,color .22s;}
+.btno:hover{border-color:var(--G);color:var(--G);}
+.ctacs{display:flex;justify-content:center;gap:44px;margin-top:44px;flex-wrap:wrap;position:relative;z-index:2;}
+.ccl{font-size:.48rem;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;display:block;margin-bottom:4px;}
+.ccv{font-size:.84rem;font-weight:700;color:var(--G);}
+@media(max-width:720px){
+  .ctabg{padding:88px 5%;}
+  .btng,.btno{cursor:pointer;}
+  .ctabtns{flex-direction:column;align-items:center;}
+  .btng,.btno{width:100%;max-width:268px;}
+  .ctacs{gap:18px;}
+}
+
+/* ══ FOOTER ══ */
+footer{background:var(--N);padding:16px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(212,175,55,.09);}
+.fbrand{display:flex;align-items:center;gap:8px;}
+.finf{font-size:.95rem;color:var(--G);}
+.fname{font-family:var(--pf);font-size:.9rem;color:var(--W);letter-spacing:3px;font-weight:400;}
+footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
+.ftag{font-size:.47rem;letter-spacing:4px;color:var(--G);text-transform:uppercase;font-weight:700;}
+@media(max-width:440px){footer{flex-direction:column;text-align:center;padding:14px 5%;}}
+
+@keyframes fUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+
+#mnav{
+  display:none;
+  position:fixed;inset:0;
+  background:#060F1E;
+  z-index:900;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transform:translateY(-12px);
+  transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+}
+#mnav.open{
+  display:flex;
+  opacity:1;
+  transform:translateY(0);
+}
+#mnav .mnav-inner-wrap{
+  display:flex;flex-direction:column;align-items:center;width:100%;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .4s .12s ease, transform .4s .12s ease;
+}
+#mnav.open .mnav-inner-wrap{opacity:1;transform:translateY(0);}
+#mnav .mnav-links li{
+  opacity:0;transform:translateX(12px);
+}
+#mnav.open .mnav-links li:nth-child(1){animation:slideIn .35s .15s forwards;}
+#mnav.open .mnav-links li:nth-child(2){animation:slideIn .35s .22s forwards;}
+#mnav.open .mnav-links li:nth-child(3){animation:slideIn .35s .29s forwards;}
+#mnav.open .mnav-links li:nth-child(4){animation:slideIn .35s .36s forwards;}
+#mnav .mnav-btns{opacity:0;transform:translateY(10px);}
+#mnav.open .mnav-btns{animation:fadeUp .4s .4s forwards;}
+@keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+/* ══ LUXURY MOBILE NAV ══ */
+
+
+.mnav-deco{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37,transparent);}
+.mnav-close{position:absolute;top:18px;left:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;font-family:var(--tj);}
+.mnav-logo{text-align:center;margin-bottom:36px;}
+.mnav-logo .ar{font-family:var(--tj);font-size:1.8rem;font-weight:900;color:#fff;letter-spacing:4px;display:block;line-height:1.1;}
+.mnav-logo .en{font-size:.48rem;letter-spacing:6px;color:#D4AF37;text-transform:uppercase;display:block;}
+.mnav-links{list-style:none;width:80%;margin-bottom:32px;}
+.mnav-links li{border-bottom:1px solid rgba(255,255,255,.06);}
+.mnav-links a{display:block;font-family:var(--tj);font-size:.95rem;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;letter-spacing:2px;text-transform:uppercase;padding:15px 0;text-align:center;transition:color .2s;}
+.mnav-links a:hover{color:#D4AF37;}
+.mnav-btns{width:80%;display:flex;flex-direction:column;gap:10px;}
+.mnav-btn-in{display:block;text-align:center;padding:14px;background:rgba(212,175,55,.08);border:1.5px solid rgba(212,175,55,.3);color:rgba(255,255,255,.85);font-family:var(--tj);font-weight:800;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,175,55,.2);}
+.mnav-btn-reg{display:block;text-align:center;padding:14px;background:#D4AF37;color:#0C2540;font-family:var(--tj);font-weight:900;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,175,55,.2);}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cr"></div>
+
+<!-- FLOAT BUTTONS -->
+<div class="fab">
+  <a class="fab-btn fab-wa on" id="fabwa" href="https://wa.me/201027360268" target="_blank" rel="noopener" aria-label="واتساب دايم">💬</a>
+  <button class="fab-btn fab-top" id="fabtop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="للأعلى">↑</button>
+</div>
+
+<!-- NAV -->
+<nav id="nav" class="dark">
+  <a href="#" class="nl">
+    <div class="nb"><i>∞</i></div>
+    <div class="nt"><span class="n-ar">دايم</span><span class="n-en">DAYEM · Trade Without Restrictions</span></div>
+  </a>
+  <div class="nr">
+    <ul class="nls">
+      <li><a href="#sol">الحل</a></li>
+      <li><a href="#wa">رحلة التاجر</a></li>
+      <li><a href="#pr">الأسعار</a></li>
+      <li><a href="#inv">المستثمرون</a></li>
+    </ul>
+    <a href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/login'" class="nav-login">دخول</a><a href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'" class="nav-register">ابدأ متجرك</a>
+    <button class="nham" id="ham" aria-label="القائمة"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<!-- HERO -->
+<section class="hero" id="home" data-theme="split">
+  <div class="hbg-b"></div>
+  <div class="hbg-n"></div>
+  <div class="hseam"></div>
+  <div class="hm">
+    <div class="hey"><div class="hey-l"></div><span class="hey-t">منصة التجارة الإلكترونية المصرية</span></div>
+    <h1 class="ht1">التاجر المصري<br>يستحق</h1>
+    <div class="ht2">منصة تليق به ∞</div>
+    <div class="hrule"></div>
+    <p class="hdesc">متجرك أونلاين كامل في <b>٥ دقايق</b> — من واتساب فقط.<br>بدون خبرة تقنية. توصيل لكل <b>٢٧ محافظة</b>.</p>
+    <div class="hbtns">
+      <button class="btn-fill" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'"><span>ابدأ متجرك دلوقتي</span></button>
+      <button class="btn-ghost" onclick="document.getElementById('sol').scrollIntoView({behavior:'smooth'})">إزاي بيشتغل؟</button>
+    </div>
+    <div class="hstats">
+      <div class="hs"><span class="hsn" id="hs1">0</span><span class="hsl">تاجر نشط</span></div>
+      <div class="hs"><span class="hsn">27</span><span class="hsl">محافظة</span></div>
+      <div class="hs"><span class="hsn">٥ د</span><span class="hsl">للإنشاء</span></div>
+      <div class="hs"><span class="hsn" id="hs2">0</span><span class="hsl">طلب/شهر</span></div>
+    </div>
+  </div>
+  <div class="hb">
+    <div class="bglow"></div>
+    <div class="bdb">
+      <div class="bdb-box">
+        <span class="bdb-ar">دايم</span>
+        <span class="bdb-sub">تجارتك بدون قيود</span>
+        <span class="bdb-inf">∞</span>
+        <span class="bdb-en">DAYEM</span>
+        <span class="bdb-tag">Trade Without Restrictions</span>
+      </div>
+      <div class="bpills">
+        <span class="bp">$2.4B سوق</span>
+        <span class="bp">38% نمو</span>
+        <span class="bp">3M+ تاجر</span>
+      </div>
+    </div>
+  </div>
+  <div class="scue"><div class="scue-l"></div><span class="scue-t">اكتشف</span></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" data-theme="dark">
+  <div class="tk-t">
+    <span class="tki"><span class="tkg"></span>واتساب → متجر في ٥ دقايق</span>
+    <span class="tki"><span class="tkg"></span>٢٧ محافظة توصيل</span>
+    <span class="tki"><span class="tkg"></span>AI Catalog Generation</span>
+    <span class="tki"><span class="tkg"></span>فودافون كاش · انستاباي · كارت</span>
+    <span class="tki"><span class="tkg"></span>Bosta &amp; J&amp;T Integration</span>
+    <span class="tki"><span class="tkg"></span>داشبورد بالعربي Real-time</span>
+    <span class="tki"><span class="tkg"></span>ابدأ بـ 100 جنيه فقط</span>
+    <span class="tki"><span class="tkg"></span>واتساب → متجر في ٥ دقايق</span>
+    <span class="tki"><span class="tkg"></span>٢٧ محافظة توصيل</span>
+    <span class="tki"><span class="tkg"></span>AI Catalog Generation</span>
+    <span class="tki"><span class="tkg"></span>فودافون كاش · انستاباي · كارت</span>
+    <span class="tki"><span class="tkg"></span>Bosta &amp; J&amp;T Integration</span>
+    <span class="tki"><span class="tkg"></span>داشبورد بالعربي Real-time</span>
+    <span class="tki"><span class="tkg"></span>ابدأ بـ 100 جنيه فقط</span>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="sec pbg" id="prob" data-theme="light">
+  <div class="si">
+    <div class="pwrap">
+      <div class="pside rv">
+        <div class="eyb"><div class="eyb-l"></div><span class="eyb-t lt">المشكلة</span></div>
+        <h2 class="sh lt">وقتك أغلى من<br><em>كده بكتير</em></h2>
+        <p class="sp lt">٣+ مليون تاجر مصري بيضيّع وقته في تسويق يدوي، شحن مش منظم، وزبون مش لاقيه. دايم غيّر المعادلة.</p>
+      </div>
+      <div class="pgrid rv d2">
+        <div class="pc"><span class="pcn">٠١</span><div class="pct">وقت ضايع في التسويق اليدوي</div><div class="pcb">التاجر المصري بيقضي ساعات في الرد على نفس الأسئلة بدل ما يركز على البيع.</div><span class="pctag">٩٥٪ من التجار</span></div>
+        <div class="pc"><span class="pcn">٠٢</span><div class="pct">فرص بيع ضايعة كل يوم</div><div class="pcb">بدون متجر أونلاين منظم، الزبون بيروح للمنافس اللي عنده حضور رقمي أفضل.</div><span class="pctag">+٤٠٪ تكلفة</span></div>
+        <div class="pc"><span class="pcn">٠٣</span><div class="pct">مفيش كتالوج احترافي</div><div class="pcb">٨٠٪ من التجار بيعتمدوا على واتساب شخصي — بدون صور منظمة أو أسعار واضحة.</div><span class="pctag">٨٠٪ واتساب فقط</span></div>
+        <div class="pc"><span class="pcn">٠٤</span><div class="pct">مش قادر توصل لزباين جدد</div><div class="pcb">التاجر محدود في منطقته بدون رابط يشاركه على السوشيال ميديا.</div><span class="pctag">٦٠٪ كاش فقط</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="sec sbg" id="sol" data-theme="dark">
+  <div class="si">
+    <div class="stop">
+      <div class="rv">
+        <div class="eyb"><div class="eyb-l"></div><span class="eyb-t dk">الحل</span></div>
+        <h2 class="sh dk">من واتساب<br>لمتجر <em>عالمي</em><br>في <span style="color:var(--G)">٥ دقايق</span></h2>
+      </div>
+      <div class="rv d2" style="align-self:center;">
+        <p class="sp dk">الذكاء الاصطناعي بيحلل صور منتجاتك، بيكتب الأوصاف، وبيبني المتجر تلقائياً. التاجر بس بيبعت صور — الباقي على دايم.</p>
+      </div>
+    </div>
+    <div class="flow rv d1">
+      <div class="fc">
+        <div class="fci">📱</div><span class="fcn">الخطوة ١</span><div class="fct">بعت الصور</div><div class="fcd">على واتساب</div>
+        <div class="fcd-expand">بعت صور منتجاتك مع الأسعار والكميات على واتساب دايم — مش محتاج أي حاجة تانية</div>
+      </div>
+      <div class="fc">
+        <div class="fci">🤖</div><span class="fcn">الخطوة ٢</span><div class="fct">AI بيشتغل</div><div class="fcd">تلقائياً</div>
+        <div class="fcd-expand">GPT Vision بيحلل الصور ويكتب أوصاف احترافية بالعربي والإنجليزي في ثواني</div>
+      </div>
+      <div class="fc">
+        <div class="fci">🏪</div><span class="fcn">الخطوة ٣</span><div class="fct">المتجر جاهز</div><div class="fcd">في دقايق</div>
+        <div class="fcd-expand">رابط مخصص dayem.shop/اسمك جاهز للمشاركة — تصميم احترافي وكل طرق الدفع</div>
+      </div>
+      <div class="fc">
+        <div class="fci">📢</div><span class="fcn">الخطوة ٤</span><div class="fct">شارك وابيع</div><div class="fcd">ستوري أو بوست</div>
+        <div class="fcd-expand">شارك الرابط على فيسبوك أو تيك توك — الزبون بيضغط ويطلب مباشرة بدون تعقيد</div>
+      </div>
+      <div class="fc">
+        <div class="fci">💰</div><span class="fcn">الخطوة ٥</span><div class="fct">استلم فلوسك</div><div class="fcd">كاش أو أونلاين</div>
+        <div class="fcd-expand">Bosta وJ&T بتوصل في كل مصر. كاش أو فودافون كاش أو انستاباي — إنت تختار</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHATSAPP DEMO -->
+<section class="sec wabg" id="wa" data-theme="dark">
+  <div class="si">
+    <div class="wawrap">
+      <div class="wasts rv">
+        <div class="eyb" style="margin-bottom:13px;"><div class="eyb-l"></div><span class="eyb-t dk">رحلة التاجر</span></div>
+        <h2 class="sh dk" style="margin-bottom:11px;">محادثة واحدة<br><em>تغير كل حاجة</em></h2>
+        <p class="sp dk" style="margin-bottom:28px;">بعتلنا صور منتجاتك — احنا بنعمل الباقي في دقايق.</p>
+        <div class="wst"><div class="wstic">📱</div><div><div class="wstt">بعت صور منتجاتك</div><div class="wstd">مش محتاج غير الصور مع الأسعار على واتساب دايم</div></div></div>
+        <div class="wst"><div class="wstic">🤖</div><div><div class="wstt">AI بيعمل الكتالوج</div><div class="wstd">GPT Vision بيحلل ويكتب أوصاف احترافية في ثواني</div></div></div>
+        <div class="wst"><div class="wstic">🔗</div><div><div class="wstt">متجرك برابط مخصص</div><div class="wstd">dayem.shop/اسمك — شاركه وابدأ تبيع فوراً</div></div></div>
+        <div class="wst"><div class="wstic">📊</div><div><div class="wstt">تابع كل حاجة</div><div class="wstd">طلباتك ومبيعاتك وأرباحك من موبايلك بالعربي</div></div></div>
+      </div>
+      <div class="rv d3">
+        <div class="waph" id="waph">
+          <div class="wpb"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="wph2"><div class="wpav">∞</div><div><div class="wpnm">دايم — إنشاء متجرك</div><div class="wpst">● متصل الآن</div></div></div>
+          <div class="wpmsgs" id="wpmsgs">
+            <div class="wptyp" id="wptyp"><span></span><span></span><span></span></div>
+          </div>
+          <div class="wpinp"><input placeholder="اكتب رسالة..." readonly><div class="wpsnd">➤</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<section class="sec nubg" id="nums" data-theme="light">
+  <div class="si">
+    <div class="nuh rv">الأرقام بتتكلم لوحدها</div>
+    <div class="nugrid rv d1">
+      <div class="ng"><span class="ngn" id="n1">0</span><span class="ngl">تاجر نشط</span></div>
+      <div class="ng"><span class="ngn" id="n2">0</span><span class="ngl">طلب شهرياً</span></div>
+      <div class="ng"><span class="ngn">27</span><span class="ngl">محافظة توصيل</span></div>
+      <div class="ng"><span class="ngn" id="n3">0%</span><span class="ngl">نمو سنوي للسوق</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="sec fbg" id="feat" data-theme="light">
+  <div class="si">
+    <div class="rv">
+      <div class="eyb"><div class="eyb-l"></div><span class="eyb-t lt">المميزات</span></div>
+      <h2 class="sh lt">كل حاجة في<br><em>مكان واحد</em></h2>
+    </div>
+    <div class="fgrid rv d1">
+      <div class="fg tall" data-n="01"><span class="fgic">🤖</span><div class="fgt">AI Catalog Generation</div><div class="fgd">GPT-4o Vision بيحلل صور منتجاتك، بيكتب أوصاف احترافية بالعربي والإنجليزي، وبيرتب الكتالوج تلقائياً. التاجر بس بيبعت صور — الباقي على دايم.<br><br>أحدث تقنيات الذكاء الاصطناعي في خدمة التاجر المصري البسيط.</div><span class="fgb">OpenAI GPT-4o</span></div>
+      <div class="fg" data-n="02"><span class="fgic">🚚</span><div class="fgt">شحن مدمج وأسعار مخفضة</div><div class="fgd">Bosta وJ&T بأسعار خاصة. أرخص بـ ٣٠٪ من السعر العادي لكل محافظات مصر.</div><span class="fgb">Bosta + J&T</span></div>
+      <div class="fg" data-n="03"><span class="fgic">💳</span><div class="fgt">كل طرق الدفع المصرية</div><div class="fgd">كاش عند الاستلام، فودافون كاش، انستاباي، وكارت بنكي عبر Fawry. من اليوم الأول.</div><span class="fgb">Fawry + InstaPay</span></div>
+      <div class="fg" data-n="04"><span class="fgic">📊</span><div class="fgt">داشبورد ذكي بالعربي</div><div class="fgd">مبيعاتك وطلباتك وأرباحك في لحظة. تقارير تفصيلية Real-time من موبايلك.</div><span class="fgb">Real-time Analytics</span></div>
+      <div class="fg" data-n="05"><span class="fgic">🔔</span><div class="fgt">إشعارات فورية</div><div class="fgd">كل طلب جديد بيوصلك فوراً على واتساب والموبايل. مش هيفوتك أوردر.</div><span class="fgb">Socket.IO</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec prbg" id="pr" data-theme="dark">
+  <div class="si">
+    <div class="rv">
+      <div class="eyb"><div class="eyb-l"></div><span class="eyb-t dk">الأسعار</span></div>
+      <h2 class="sh dk">ابدأ بـ <em>100 جنيه</em><br>ادفع لما تكسب</h2>
+      <p class="sp dk">مفيش رسوم خفية. مفيش عقود. إلغاء في أي وقت.</p>
+    </div>
+    <div class="prgrid rv d1">
+      <div class="prc">
+        <div class="prcname">ستارتر</div>
+        <div class="prcprice">100<sub> ج/شهر</sub></div>
+        <div class="prcdesc">للتاجر اللي بادئ</div>
+        <div class="prcdiv"></div>
+        <div class="prcf">متجر أونلاين كامل</div>
+        <div class="prcf">حتى ٥٠ منتج</div>
+        <div class="prcf">رابط مخصص</div>
+        <div class="prcf">كل طرق الدفع</div>
+        <div class="prcf">واتساب دعم</div>
+        <button class="prcbtn ol" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">ابدأ دلوقتي</button>
+      </div>
+      <div class="prc hot">
+        <div class="prcbadge">الأشهر ✦</div>
+        <div class="prcname">تاجر</div>
+        <div class="prcprice">199<sub> ج/شهر</sub></div>
+        <div class="prcdesc">للتاجر الجاد</div>
+        <div class="prcdiv"></div>
+        <div class="prcf">منتجات غير محدودة</div>
+        <div class="prcf">تقارير مبيعات كاملة</div>
+        <div class="prcf">شحن مخفض ٣٠٪</div>
+        <div class="prcf">دعم أولوية ٢٤/٧</div>
+        <div class="prcf">كوبونات وخصومات</div>
+        <div class="prcf">إشعارات واتساب</div>
+        <button class="prcbtn fl" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">اشترك الآن</button>
+      </div>
+      <div class="prc">
+        <div class="prcname">برو</div>
+        <div class="prcprice">349<sub> ج/شهر</sub></div>
+        <div class="prcdesc">للتاجر المحترف</div>
+        <div class="prcdiv"></div>
+        <div class="prcf">كل مميزات تاجر</div>
+        <div class="prcf">متاجر متعددة</div>
+        <div class="prcf">API Integration</div>
+        <div class="prcf">تحليلات متقدمة</div>
+        <div class="prcf">مدير حساب مخصص</div>
+        <button class="prcbtn ol" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">تواصل معنا</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTOR -->
+<section class="sec invbg" id="inv" data-theme="light">
+  <div class="si">
+    <div class="rv">
+      <div class="eyb"><div class="eyb-l"></div><span class="eyb-t lt">للمستثمرين</span></div>
+      <h2 class="sh lt">فرصة في سوق<br><em>جاهز للانفجار</em></h2>
+      <p class="sp lt">مصر: ٩٥ مليون نسمة، ٣+ مليون تاجر صغير، واتساب ٩٠٪+، نمو التجارة الإلكترونية ٣٨٪ سنوياً.</p>
+    </div>
+    <div class="invwrap">
+      <div class="invnums rv d1">
+        <div class="inn"><span class="innn">$2.4B</span><span class="innl">حجم السوق</span></div>
+        <div class="inn"><span class="innn">+38%</span><span class="innl">نمو سنوي</span></div>
+        <div class="inn"><span class="innn">18 شهر</span><span class="innl">Break-even</span></div>
+        <div class="inn"><span class="innn">4.5x</span><span class="innl">عائد في ٣ سنوات</span></div>
+      </div>
+      <div class="rv d2">
+        <div class="rm-title"><div class="rm-title-l"></div><span class="rm-title-t">خارطة الطريق</span></div>
+        <div class="rm">
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q2 2025</span><div class="rmit">Proof of Concept</div><div class="rmib">٥٠ تاجر في منطقة واحدة — إثبات الطلب الحقيقي وتحسين المنتج</div></div>
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q4 2025</span><div class="rmit">بناء المنصة الكاملة</div><div class="rmib">AI + شحن مدمج + كل طرق الدفع + Automation كامل</div></div>
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q2 2026</span><div class="rmit">التوسع الوطني</div><div class="rmib">٥,٠٠٠ تاجر + شراكات استراتيجية مع الغرف التجارية</div></div>
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">2027</span><div class="rmit">التوسع الإقليمي</div><div class="rmib">ليبيا والسودان — ١٠٠,٠٠٠ تاجر في المنطقة</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="ctabg" data-theme="dark">
+  <div class="ctaframe"></div>
+  <span class="ctaey">الخطوة التالية</span>
+  <h2 class="ctah">جاهز تبقى جزء<br>من <em>المستقبل؟</em></h2>
+  <p class="ctap">سواء كنت تاجر أو مستثمر — دايم هنا</p>
+  <div class="ctabtns">
+    <button class="btng" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">ابدأ متجرك دلوقتي</button>
+    <button class="btno" onclick="window.open('https://wa.me/201027360268?text=أريد عرض استثماري عن دايم','_blank')">عرض للمستثمرين</button>
+  </div>
+  <div class="ctacs">
+    <div><span class="ccl">واتساب</span><span class="ccv">+٢٠١٠٢٧٣٦٠٢٦٨</span></div>
+    <div><span class="ccl">الموقع</span><span class="ccv">dayem.shop</span></div>
+    <div><span class="ccl">للمستثمرين</span><span class="ccv">invest@dayem.shop</span></div>
+  </div>
+</section>
+
+<footer data-theme="dark">
+  <div class="fbrand"><span class="finf">∞</span><span class="fname">DAYEM</span></div>
+  <p>© 2025 دايم — كل الحقوق محفوظة</p>
+  <span class="ftag">Trade Without Restrictions</span>
+</footer>
+
+<script>
+/* ── CURSOR ── */
+const C=document.getElementById('cur'),CR=document.getElementById('cr')
+let mx=-100,my=-100,rx=-100,ry=-100
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true})
+;(function L(){
+  C.style.left=(mx-4)+'px';C.style.top=(my-4)+'px'
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1
+  CR.style.left=(rx-17)+'px';CR.style.top=(ry-17)+'px'
+  requestAnimationFrame(L)
+})()
+document.querySelectorAll('button,a,.pc,.fc,.fg,.inn,.prc,.ng,.wst').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{C.classList.add('hov');CR.classList.add('hov')})
+  el.addEventListener('mouseleave',()=>{C.classList.remove('hov');CR.classList.remove('hov')})
+})
+
+/* ── SMART NAV — detects beige/dark section ── */
+const navEl=document.getElementById('nav')
+const sections=document.querySelectorAll('[data-theme]')
+function updateNav(){
+  const y=scrollY+80
+  let theme='dark'
+  sections.forEach(sec=>{
+    const t=sec.offsetTop,h=sec.offsetHeight
+    if(y>=t&&y<t+h) theme=sec.dataset.theme
+  })
+  const scrolled=scrollY>60
+  navEl.classList.toggle('dark', scrolled || theme==='dark')
+  navEl.classList.toggle('light', !scrolled && (theme==='light'||theme==='split'))
+}
+window.addEventListener('scroll',()=>{
+  updateNav()
+  // float buttons
+  const y=scrollY
+  document.getElementById('fabtop').classList.toggle('on',y>380)
+  document.getElementById('fabwa').classList.toggle('on',y>150)
+},{passive:true})
+updateNav()
+
+/* ── MOBILE NAV ── */
+document.getElementById('ham').addEventListener('click',function(e){e.stopPropagation();document.getElementById('mnav').classList.add('open')})
+// mc removed
+function cm(e){
+  if(e&&e.stopPropagation)e.stopPropagation();
+  const m=document.getElementById('mnav');
+  m.style.opacity='0';
+  m.style.transform='translateY(-12px)';
+  setTimeout(()=>{m.classList.remove('open');m.style.opacity='';m.style.transform='';},320);
+}
+
+/* ── REVEAL ── */
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.07})
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el))
+
+/* ── COUNTERS ── */
+function cnt(id,end,suf){
+  const el=document.getElementById(id);if(!el)return
+  let v=0;const st=end/55
+  const t=setInterval(()=>{v+=st;if(v>=end){v=end;clearInterval(t)}el.textContent=Math.floor(v)+(suf||'')},18)
+}
+const hObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){cnt('hs1',523);cnt('hs2',4891);hObs.unobserve(e.target)}})},{threshold:.5})
+const hst=document.querySelector('.hstats');if(hst)hObs.observe(hst)
+const nObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){cnt('n1',523);cnt('n2',4891);cnt('n3',38,'%');nObs.unobserve(e.target)}})},{threshold:.5})
+const ngr=document.querySelector('.nugrid');if(ngr)nObs.observe(ngr)
+
+/* ── WA DEMO — plays on hover, replays each time ── */
+const waMsgs=[
+  {s:'i',t:'أهلاً! 👋 أنا دايم — بعتلي صور منتجاتك مع الأسعار وهنعمل متجرك في ٥ دقايق!',ms:900},
+  {s:'o',t:'تمام خد ده',extra:1,ms:2000},
+  {s:'i',t:'🔥 ممتاز! جاري تحليل الصور...',prog:1,ms:1900},
+  {s:'i',t:'✅ متجرك جاهز!',card:1,ms:1400},
+]
+let waRunning=false
+
+function resetWA(){
+  const box=document.getElementById('wpmsgs')
+  const typ=document.getElementById('wptyp')
+  // Remove all messages but keep typing indicator
+  Array.from(box.children).forEach(c=>{if(c!==typ)c.remove()})
+  if(typ){typ.classList.remove('show');box.appendChild(typ);}
+}
+
+async function addMsg(d){
+  return new Promise(r=>{
+    const box=document.getElementById('wpmsgs'),typ=document.getElementById('wptyp')
+    if(typ)typ.classList.add('show')
+    box.scrollTop=box.scrollHeight
+    setTimeout(()=>{
+      if(typ)typ.classList.remove('show')
+      const div=document.createElement('div')
+      div.className='wm '+d.s
+      let h='<span>'+d.t+'</span>'
+      if(d.extra)h+=`<div style="background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.15);border-radius:6px;padding:8px;margin-top:4px;font-size:.64rem;"><div style="color:var(--G);font-weight:700">📷 منتجاتي.zip — 15 صورة</div><div style="color:rgba(255,255,255,.3);margin-top:2px">أسعار: 200 — 900 جنيه</div></div>`
+      if(d.prog)h+=`<div style="background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.12);border-radius:6px;padding:9px;margin-top:4px;font-size:.64rem;line-height:1.78;"><div style="color:var(--G);font-weight:700;margin-bottom:2px">⏳ جاري الإنشاء</div><div style="color:rgba(255,255,255,.36)">✓ تحليل الصور<br>✓ كتابة الأوصاف<br>⏳ بناء المتجر...</div></div>`
+      if(d.card)h+=`<div class="wmcard"><div class="wmch">∞ متجر حسن للأزياء</div><div class="wmcu">🔗 dayem.shop/hassan</div><div class="wmcs">15 منتج · 27 محافظة · كل طرق الدفع</div></div>`
+      const now=new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})
+      h+=`<div class="wmt">${now}${d.s==='o'?' ✓✓':''}</div>`
+      div.innerHTML=h
+      const typ2=document.getElementById('wptyp')
+      if(typ2&&typ2.parentNode===box)box.insertBefore(div,typ2);else box.appendChild(div)
+      requestAnimationFrame(()=>requestAnimationFrame(()=>div.classList.add('show')))
+      box.scrollTop=box.scrollHeight
+      r()
+    },d.ms)
+  })
+}
+
+async function runWA(){
+  if(waRunning)return
+  waRunning=true
+  resetWA()
+  for(const m of waMsgs)await addMsg(m)
+  waRunning=false
+}
+
+// Play on hover — replay every time mouse enters
+const waPhEl=document.getElementById('waph')
+if(waPhEl){
+  waPhEl.addEventListener('mouseenter',()=>runWA())
+  // Also play once when scrolled into view
+  const wo=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){runWA();wo.unobserve(e.target)}})},{threshold:.4})
+  wo.observe(waPhEl)
+}
+</script>
+
+<div id="mnav" class="mnav">
+  <div class="mnav-deco"></div>
+  <button class="mnav-close" onclick="cm(event)">✕</button>
+  <div class="mnav-inner-wrap">
+    <div class="mnav-logo">
+      <span class="ar">دايم</span>
+      <span class="en">DAYEM ∞</span>
+    </div>
+    <ul class="mnav-links">
+      <li><a href="#sol" onclick="cm()">الحل</a></li>
+      <li><a href="#wa" onclick="cm()">رحلة التاجر</a></li>
+      <li><a href="#pr" onclick="cm()">الأسعار</a></li>
+      <li><a href="#inv" onclick="cm()">المستثمرون</a></li>
+    </ul>
+    <div class="mnav-btns">
+      <a class="mnav-btn-in" href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/login';cm();">دخول</a>
+      <a class="mnav-btn-reg" href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register';cm();">ابدأ متجرك مجاناً ✦</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
