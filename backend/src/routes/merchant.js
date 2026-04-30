@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
+const { sendTelegram } = require('../services/telegram');
 
 const protect = async (req, res, next) => {
   try {
@@ -28,7 +29,7 @@ const makeSlug = (str) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, phone, password, storeName } = req.body;
+    const { name, email, phone, password, storeName, category, governorate } = req.body;
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: 'البريد مسجل بالفعل' });
     }
@@ -40,7 +41,14 @@ router.post('/register', async (req, res) => {
     const merchant = await User.create({
       name, email, phone, password,
       role: 'merchant',
-      store: { name: storeName, slug, isActive: true, plan: 'starter' }
+      store: {
+        name: storeName,
+        slug,
+        isActive: true,
+        plan: 'starter',
+        category: category || '',
+        governorate: governorate || '',
+      }
     });
     res.status(201).json({
       success: true,
@@ -99,7 +107,6 @@ router.get('/products', protect, async (req, res) => {
 router.post('/products', protect, async (req, res) => {
   try {
     const { nameAr, name, description, price, stock, category, images } = req.body;
-    console.log('images received:', JSON.stringify(images));
     const product = await Product.create({
       nameAr: nameAr || name,
       name: name || nameAr,
@@ -110,10 +117,8 @@ router.post('/products', protect, async (req, res) => {
       images: images || [],
       merchant: req.merchant._id
     });
-    console.log('saved images:', JSON.stringify(product.images));
     res.status(201).json({ success: true, product });
   } catch (err) {
-    console.error('Product create error:', err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -173,6 +178,34 @@ router.put('/store', protect, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+
+// ── Telegram: ربط الحساب ──────────────────────────────────────────────────
+router.put('/telegram', protect, async (req, res) => {
+  try {
+    const { chatId } = req.body;
+    if (!chatId) return res.status(400).json({ message: 'Chat ID مطلوب' });
+
+    await User.findByIdAndUpdate(req.merchant._id, { telegramChatId: chatId.toString() });
+
+    // رسالة تأكيد فورية
+    await sendTelegram(chatId.toString(),
+      `✅ <b>تم الربط بنجاح!</b>\n\nمتجر <b>${req.merchant.store.name}</b> هيوصلك إشعار على تليجرام مع كل طلب جديد 🎉\n\n<i>DAYEM ∞ — دايم معاك</i>`
+    );
+
+    res.json({ success: true, message: 'تم ربط تليجرام بنجاح ✅' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ── Telegram: جلب الحالة ──────────────────────────────────────────────────
+router.get('/telegram', protect, async (req, res) => {
+  res.json({
+    success: true,
+    connected: !!req.merchant.telegramChatId,
+    chatId: req.merchant.telegramChatId || ''
+  });
 });
 
 module.exports = router;

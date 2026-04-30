@@ -112,18 +112,33 @@ export default function CustomerStore() {
               </div>
             )}
 
-            {/* Cart */}
-            <button onClick={() => setShowCart(!showCart)} style={{
-              background: cartCount > 0 ? '#D4AF37' : 'transparent',
-              border: `1px solid ${cartCount > 0 ? '#D4AF37' : 'rgba(212,175,55,.25)'}`,
-              color: cartCount > 0 ? '#0C2540' : '#D4AF37',
-              padding: isMobile ? '8px 12px' : '9px 16px',
-              fontFamily: 'Tajawal', fontWeight: 800, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: isMobile ? '.75rem' : '.78rem', transition: 'all .25s', flexShrink: 0
-            }}>
-              ◆ {cartCount > 0 ? (isMobile ? cartCount : `${cartCount} · ${total} ج`) : 'السلة'}
-            </button>
+            {/* Cart + Account */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+              {/* Account button */}
+              {localStorage.getItem('dayem_customer_token') ? (
+                <button onClick={() => nav('/customer/dashboard')}
+                  style={{ background: 'rgba(212,175,55,.08)', border: '1px solid rgba(212,175,55,.2)', color: '#D4AF37', padding: isMobile ? '8px 10px' : '9px 14px', fontFamily: 'Tajawal', fontWeight: 700, cursor: 'pointer', fontSize: isMobile ? '.72rem' : '.75rem', display: 'flex', alignItems: 'center', gap: 5, transition: 'all .2s' }}>
+                  👤 {isMobile ? '' : JSON.parse(localStorage.getItem('dayem_customer') || '{}').name?.split(' ')[0]}
+                </button>
+              ) : (
+                <button onClick={() => nav('/customer/login', { state: { redirect: `/store/${slug}` } })}
+                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,.1)', color: 'rgba(255,255,255,.4)', padding: isMobile ? '8px 10px' : '9px 14px', fontFamily: 'Tajawal', fontSize: isMobile ? '.72rem' : '.75rem', cursor: 'pointer', transition: 'all .2s' }}>
+                  {isMobile ? '👤' : 'دخول'}
+                </button>
+              )}
+              {/* Cart */}
+              <button onClick={() => setShowCart(!showCart)} style={{
+                background: cartCount > 0 ? '#D4AF37' : 'transparent',
+                border: `1px solid ${cartCount > 0 ? '#D4AF37' : 'rgba(212,175,55,.25)'}`,
+                color: cartCount > 0 ? '#0C2540' : '#D4AF37',
+                padding: isMobile ? '8px 12px' : '9px 16px',
+                fontFamily: 'Tajawal', fontWeight: 800, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: isMobile ? '.75rem' : '.78rem', transition: 'all .25s'
+              }}>
+                ◆ {cartCount > 0 ? (isMobile ? cartCount : `${cartCount} · ${total} ج`) : 'السلة'}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Search */}

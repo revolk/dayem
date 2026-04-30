@@ -8,17 +8,23 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true, minlength: 6, select: false },
   role: { type: String, enum: ['customer', 'merchant', 'admin'], default: 'customer' },
   store: {
-    name: { type: String, trim: true },
-    slug: { type: String, unique: true, sparse: true },
-    description: { type: String },
-    logo: { type: String, default: '' },
-    phone: { type: String },
-    governorate: { type: String },
-    address: { type: String },
-    isActive: { type: Boolean, default: true },
-    plan: { type: String, enum: ['starter', 'tajer', 'pro'], default: 'starter' },
+    name:         { type: String, trim: true },
+    slug:         { type: String, unique: true, sparse: true },
+    description:  { type: String },
+    logo:         { type: String, default: '' },
+    phone:        { type: String },
+    governorate:  { type: String },
+    address:      { type: String },
+    category:     { type: String },
+    isActive:     { type: Boolean, default: true },
+    plan:         { type: String, enum: ['starter', 'tajer', 'pro'], default: 'starter' },
+    // ── وسائل الدفع ──────────────────────────────
+    vodafoneCash: { type: String, default: '' },  // رقم فودافون كاش
+    instapay:     { type: String, default: '' },  // رقم انستاباي / IPA
+    fawryCode:    { type: String, default: '' },  // رقم موبايل فوري
   },
-  isActive: { type: Boolean, default: true },
+  isActive:       { type: Boolean, default: true },
+  telegramChatId: { type: String, default: '' },
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

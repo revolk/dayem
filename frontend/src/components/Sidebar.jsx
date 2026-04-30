@@ -25,10 +25,12 @@ export default function Sidebar({ active }) {
   }
 
   const links = [
-    { id: 'dashboard', label: 'الرئيسية', icon: '◈', path: '/dashboard' },
-    { id: 'products', label: 'المنتجات', icon: '◆', path: '/dashboard/products' },
-    { id: 'orders', label: 'الطلبات', icon: '◉', path: '/dashboard/orders' },
-    { id: 'settings', label: 'الإعدادات', icon: '◎', path: '/dashboard/settings' },
+    { id: 'dashboard', label: 'الرئيسية',     icon: '◈', path: '/dashboard' },
+    { id: 'products',  label: 'المنتجات',     icon: '◆', path: '/dashboard/products' },
+    { id: 'orders',    label: 'الطلبات',      icon: '◉', path: '/dashboard/orders' },
+    { id: 'coupons',   label: 'الكوبونات',    icon: '🎫', path: '/dashboard/coupons' },
+    { id: 'analytics', label: 'التحليلات',    icon: '◎', path: '/dashboard/analytics' },
+    { id: 'settings',  label: 'الإعدادات',    icon: '◎', path: '/dashboard/settings' },
   ]
 
   const SidebarContent = () => (
@@ -95,7 +97,6 @@ export default function Sidebar({ active }) {
 
   if (isMobile) return (
     <>
-      {/* Mobile top bar */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 52, background: '#070D1A', borderBottom: '1px solid rgba(212,175,55,.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 200, fontFamily: 'Tajawal', direction: 'rtl' }}>
         <button onClick={() => setOpen(true)} style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#D4AF37', width: 36, height: 36, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
           ☰
@@ -109,7 +110,6 @@ export default function Sidebar({ active }) {
         </div>
       </div>
 
-      {/* Drawer overlay */}
       {open && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300 }}>
           <div onClick={() => setOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.7)' }} />

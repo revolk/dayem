@@ -3,33 +3,36 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   merchant: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   customer: {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String },
-    address: { type: String, required: true },
+    name:        { type: String, required: true },
+    phone:       { type: String, required: true },
+    email:       { type: String },
+    address:     { type: String, required: true },
     governorate: { type: String, required: true },
   },
   items: [{
-    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-    nameAr: { type: String, required: true },
-    price: { type: Number, required: true },
+    product:  { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    nameAr:   { type: String, required: true },
+    price:    { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
-    image: { type: String },
+    image:    { type: String },
   }],
-  totalPrice: { type: Number, required: true },
+  totalPrice:    { type: Number, required: true },
   shippingPrice: { type: Number, default: 60 },
-  finalPrice: { type: Number, required: true },
+  discount:      { type: Number, default: 0 },      // ← خصم الكوبون
+  couponCode:    { type: String, default: '' },      // ← كود الكوبون
+  finalPrice:    { type: Number, required: true },
   paymentMethod: {
     type: String,
     enum: ['cash', 'vodafone_cash', 'instapay', 'fawry'],
     default: 'cash'
   },
+  paymentRef: { type: String, default: '' },         // ← رقم المرجع للتحويل
   orderStatus: {
     type: String,
     enum: ['new', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'new'
   },
-  notes: { type: String },
+  notes:       { type: String },
   orderNumber: { type: String, unique: true },
 }, { timestamps: true });
 
