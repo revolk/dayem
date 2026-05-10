@@ -1,8 +1,37 @@
-import { useState, useEffect } from 'react'
-import { merchantAPI } from '../../services/api'
+// frontend/src/pages/merchant/Orders.jsx
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 
-const useWindowWidth = () => {
+const BASE = window.location.protocol === 'https:'
+  ? `${window.location.origin}/api`
+  : `http://${window.location.hostname}:5000/api`
+
+const token = () => localStorage.getItem('dayem_token')
+const G = '#D4AF37'
+const BG = '#060F1E'
+const SURF = '#0D1B2E'
+const CARD = '#0C1E35'
+
+const STATUS = {
+  new:        { label: 'جديد',       color: '#D4AF37', bg: 'rgba(212,175,55,.1)',  border: 'rgba(212,175,55,.25)', icon: '🔔' },
+  confirmed:  { label: 'مؤكد',       color: '#60A5FA', bg: 'rgba(96,165,250,.08)', border: 'rgba(96,165,250,.2)',  icon: '✓' },
+  processing: { label: 'جاري التجهيز',color: '#A78BFA', bg: 'rgba(167,139,250,.08)',border: 'rgba(167,139,250,.2)', icon: '⚙' },
+  shipped:    { label: 'تم الشحن',   color: '#F59E0B', bg: 'rgba(245,158,11,.08)', border: 'rgba(245,158,11,.2)',  icon: '🚚' },
+  delivered:  { label: 'تم التسليم', color: '#22C55E', bg: 'rgba(34,197,94,.08)',  border: 'rgba(34,197,94,.2)',   icon: '✅' },
+  cancelled:  { label: 'ملغي',       color: '#EF4444', bg: 'rgba(239,68,68,.08)',  border: 'rgba(239,68,68,.2)',   icon: '✕' },
+}
+
+const PAYMENT = {
+  cash:         { label: 'كاش', icon: '💵' },
+  vodafone_cash:{ label: 'فودافون كاش', icon: '📱' },
+  instapay:     { label: 'انستاباي', icon: '🏦' },
+  fawry:        { label: 'فوري', icon: '🟠' },
+}
+
+const STATUS_FLOW = ['new','confirmed','processing','shipped','delivered']
+
+const useW = () => {
   const [w, setW] = useState(window.innerWidth)
   useEffect(() => {
     const h = () => setW(window.innerWidth)
@@ -12,295 +41,434 @@ const useWindowWidth = () => {
   return w
 }
 
-const STATUSES = [
-  { id: 'all', label: 'الكل' },
-  { id: 'new', label: 'جديد', color: '#93C5FD', bg: 'rgba(59,130,246,.1)' },
-  { id: 'confirmed', label: 'مؤكد', color: '#86EFAC', bg: 'rgba(34,197,94,.1)' },
-  { id: 'processing', label: 'جاري', color: '#FDE047', bg: 'rgba(234,179,8,.1)' },
-  { id: 'shipped', label: 'شحن', color: '#FDE047', bg: 'rgba(234,179,8,.1)' },
-  { id: 'delivered', label: 'تسليم', color: '#86EFAC', bg: 'rgba(34,197,94,.1)' },
-  { id: 'cancelled', label: 'ملغي', color: '#FCA5A5', bg: 'rgba(239,68,68,.1)' },
-]
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '—'
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) + ' · ' + d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-}
-
-const timeAgo = (dateStr) => {
-  if (!dateStr) return ''
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  const hrs = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-  if (mins < 1) return 'الآن'
-  if (mins < 60) return `منذ ${mins} د`
-  if (hrs < 24) return `منذ ${hrs} س`
-  return `منذ ${days} يوم`
-}
-
 export default function Orders() {
-  const w = useWindowWidth()
-  const isMobile = w < 1024
-  const [orders, setOrders] = useState([])
-  const [filter, setFilter] = useState('all')
-  const [selected, setSelected] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [showDetail, setShowDetail] = useState(false)
+  const nav = useNavigate()
+  const w = useW()
+  const mob = w < 1024
 
-  useEffect(() => { load() }, [])
+  const [orders, setOrders]         = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [selected, setSelected]     = useState(null)
+  const [filterStatus, setFilter]   = useState('all')
+  const [search, setSearch]         = useState('')
+  const [updating, setUpdating]     = useState(null)
+  const [toast, setToast]           = useState(null)
+  const searchTimer = useRef(null)
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   const load = async () => {
-    const res = await merchantAPI.getOrders()
-    if (res.success) setOrders(res.orders)
+    setLoading(true)
+    try {
+      const res = await fetch(`${BASE}/merchant/orders`, {
+        headers: { Authorization: `Bearer ${token()}` }
+      }).then(r => r.json())
+      if (res.success) setOrders(res.orders)
+    } catch { showToast('خطأ في تحميل الطلبات', 'error') }
     setLoading(false)
   }
 
-  const updateStatus = async (id, status) => {
-    await merchantAPI.updateOrder(id, status)
-    load()
-    if (selected?._id === id) setSelected({ ...selected, orderStatus: status })
+  useEffect(() => { load() }, [])
+
+  const updateStatus = async (orderId, newStatus) => {
+    setUpdating(orderId)
+    try {
+      const res = await fetch(`${BASE}/merchant/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ orderStatus: newStatus })
+      }).then(r => r.json())
+      if (res.success) {
+        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, orderStatus: newStatus } : o))
+        if (selected?._id === orderId) setSelected(prev => ({ ...prev, orderStatus: newStatus }))
+        showToast(`تم تحديث حالة الطلب إلى "${STATUS[newStatus]?.label}"`)
+      }
+    } catch { showToast('خطأ في التحديث', 'error') }
+    setUpdating(null)
   }
 
-  const getStatus = id => STATUSES.find(s => s.id === id) || STATUSES[1]
-
   const filtered = orders.filter(o => {
-    const matchFilter = filter === 'all' || o.orderStatus === filter
-    const matchSearch = !search || o.orderNumber?.includes(search) || o.customer?.name?.includes(search) || o.customer?.phone?.includes(search)
-    return matchFilter && matchSearch
+    const matchStatus = filterStatus === 'all' || o.orderStatus === filterStatus
+    const matchSearch = !search ||
+      o.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      o.customer?.name?.includes(search) ||
+      o.customer?.phone?.includes(search)
+    return matchStatus && matchSearch
   })
 
-  const openDetail = (o) => {
-    setSelected(o)
-    if (isMobile) setShowDetail(true)
+  const stats = {
+    all: orders.length,
+    new: orders.filter(o => o.orderStatus === 'new').length,
+    confirmed: orders.filter(o => o.orderStatus === 'confirmed').length,
+    shipped: orders.filter(o => o.orderStatus === 'shipped').length,
+    delivered: orders.filter(o => o.orderStatus === 'delivered').length,
+    revenue: orders.filter(o => o.orderStatus !== 'cancelled').reduce((s, o) => s + (o.finalPrice || 0), 0),
+  }
+
+  const inp = {
+    width: '100%', padding: '9px 12px',
+    background: 'rgba(255,255,255,.04)',
+    border: '1px solid rgba(255,255,255,.08)',
+    fontFamily: 'Tajawal', fontSize: '.82rem', color: '#fff',
+    outline: 'none', boxSizing: 'border-box'
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#060F1E', fontFamily: 'Tajawal', direction: 'rtl' }}>
+    <div style={{ minHeight: '100vh', background: BG, fontFamily: 'Tajawal', direction: 'rtl' }}>
+      <style>{`
+        @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        @keyframes ts{from{opacity:0;transform:translateY(12px) translateX(-50%)}to{opacity:1;transform:translateY(0) translateX(-50%)}}
+        .fade{animation:fi .3s ease both}
+        .ord-row:hover{background:rgba(255,255,255,.025)!important;cursor:pointer}
+        ::-webkit-scrollbar{width:3px;height:3px}
+        ::-webkit-scrollbar-thumb{background:rgba(212,175,55,.2)}
+        input::placeholder{color:rgba(255,255,255,.2)!important}
+        select option{background:#0C2540}
+      `}</style>
+
       <Sidebar active="orders" />
-      <div style={{ flex: 1, marginRight: isMobile ? 0 : 240, padding: isMobile ? '68px 16px 24px' : '36px 40px', overflowY: 'auto' }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: isMobile ? 16 : 28 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{ width: 20, height: 1, background: '#D4AF37' }} />
-            <span style={{ fontSize: '.55rem', letterSpacing: 4, color: '#D4AF37', textTransform: 'uppercase', fontWeight: 800 }}>إدارة الطلبات</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
-            <div>
-              <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 900, color: '#fff', marginBottom: 4 }}>الطلبات</h1>
-              <p style={{ fontSize: '.75rem', color: 'rgba(255,255,255,.3)' }}>{orders.length} طلب</p>
-            </div>
-            {!isMobile && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                {[
-                  { label: 'جديد', count: orders.filter(o => o.orderStatus === 'new').length, color: '#93C5FD' },
-                  { label: 'تسليم', count: orders.filter(o => o.orderStatus === 'delivered').length, color: '#86EFAC' },
-                  { label: 'محصل', count: `${orders.filter(o => o.orderStatus === 'delivered').reduce((s, o) => s + o.finalPrice, 0).toLocaleString()} ج`, color: '#D4AF37' },
-                ].map((p, i) => (
-                  <div key={i} style={{ padding: '7px 14px', background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.07)', display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '.95rem', fontWeight: 700, color: p.color }}>{p.count}</span>
-                    <span style={{ fontSize: '.62rem', color: 'rgba(255,255,255,.3)' }}>{p.label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: '#070D1A', border: `1px solid ${toast.type === 'error' ? 'rgba(239,68,68,.3)' : 'rgba(212,175,55,.3)'}`,
+          padding: '12px 20px', zIndex: 9999, animation: 'ts .3s ease both',
+          display: 'flex', alignItems: 'center', gap: 10, minWidth: 260,
+          boxShadow: '0 8px 32px rgba(0,0,0,.5)'
+        }}>
+          <span style={{ fontSize: '.9rem' }}>{toast.type === 'error' ? '⚠️' : '✓'}</span>
+          <span style={{ fontSize: '.82rem', fontWeight: 600, color: '#fff' }}>{toast.msg}</span>
         </div>
+      )}
 
-        {/* Search + Filter */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ position: 'relative', marginBottom: 10 }}>
-            <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,.25)', fontSize: '.78rem', pointerEvents: 'none' }}>◈</span>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث برقم الطلب أو الاسم..."
-              style={{ width: '100%', padding: '10px 36px 10px 14px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', fontFamily: 'Tajawal', fontSize: '.82rem', color: '#fff', outline: 'none', boxSizing: 'border-box' }} />
+      {/* Main */}
+      <div style={{ marginRight: mob ? 0 : 240, paddingTop: mob ? 52 : 0 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: mob ? '16px 14px' : '28px 32px' }}>
+
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+            <div>
+              <div style={{ fontSize: '.48rem', letterSpacing: 4, color: `${G}66`, textTransform: 'uppercase', fontWeight: 800, marginBottom: 6 }}>إدارة</div>
+              <h1 style={{ fontSize: mob ? '1.3rem' : '1.6rem', fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>الطلبات</h1>
+            </div>
+            <button onClick={load}
+              style={{ padding: '8px 16px', background: 'rgba(212,175,55,.08)', border: `1px solid ${G}30`, color: G, fontFamily: 'Tajawal', fontSize: '.76rem', fontWeight: 700, cursor: 'pointer' }}>
+              ↻ تحديث
+            </button>
           </div>
-          <div style={{ display: 'flex', gap: 4, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', paddingBottom: 2 }}>
-            {STATUSES.map(s => (
-              <button key={s.id} onClick={() => setFilter(s.id)} style={{
-                padding: isMobile ? '6px 12px' : '7px 14px', border: `1px solid ${filter === s.id ? (s.color || '#D4AF37') + '44' : 'rgba(255,255,255,.07)'}`,
-                cursor: 'pointer', fontFamily: 'Tajawal', fontSize: '.7rem',
-                fontWeight: filter === s.id ? 700 : 400, whiteSpace: 'nowrap',
-                background: filter === s.id ? (s.bg || 'rgba(212,175,55,.08)') : 'transparent',
-                color: filter === s.id ? (s.color || '#D4AF37') : 'rgba(255,255,255,.3)',
-                flexShrink: 0, transition: 'all .2s'
-              }}>
-                {s.label}
-                {s.id !== 'all' && orders.filter(o => o.orderStatus === s.id).length > 0 && (
-                  <span style={{ marginRight: 4, fontSize: '.62rem', opacity: .7 }}>{orders.filter(o => o.orderStatus === s.id).length}</span>
-                )}
-              </button>
+
+          {/* Stats row */}
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(3,1fr)' : 'repeat(6,1fr)', gap: 8, marginBottom: 24 }}>
+            {[
+              { label: 'إجمالي', val: stats.all, color: 'rgba(255,255,255,.4)' },
+              { label: 'جديد', val: stats.new, color: STATUS.new.color },
+              { label: 'مؤكد', val: stats.confirmed, color: STATUS.confirmed.color },
+              { label: 'شحن', val: stats.shipped, color: STATUS.shipped.color },
+              { label: 'مسلّم', val: stats.delivered, color: STATUS.delivered.color },
+              { label: 'الإيراد', val: `${stats.revenue.toLocaleString('ar-EG')} ج`, color: G },
+            ].map((s, i) => (
+              <div key={i} style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '12px 14px', textAlign: 'center' }}>
+                <div style={{ fontSize: mob ? '.95rem' : '1.2rem', fontWeight: 900, color: s.color, lineHeight: 1, marginBottom: 4 }}>{s.val}</div>
+                <div style={{ fontSize: '.54rem', color: 'rgba(255,255,255,.2)', letterSpacing: 1.5, textTransform: 'uppercase' }}>{s.label}</div>
+              </div>
             ))}
           </div>
-        </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <div style={{ fontSize: '1.8rem', color: 'rgba(212,175,55,.15)', marginBottom: 12 }}>◉</div>
-            <div style={{ color: 'rgba(255,255,255,.2)', fontSize: '.82rem' }}>جاري التحميل...</div>
+          {/* Filters */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: 180 }}>
+              <span style={{ position: 'absolute', right: 11, top: '50%', transform: 'translateY(-50%)', color: `${G}40`, fontSize: '.76rem', pointerEvents: 'none' }}>🔍</span>
+              <input value={search} onChange={e => { setSearch(e.target.value) }}
+                placeholder="بحث برقم الطلب أو الاسم أو الموبايل..."
+                style={{ ...inp, paddingRight: 32 }}
+                onFocus={e => e.target.style.borderColor = G}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,.08)'} />
+            </div>
+            <select value={filterStatus} onChange={e => setFilter(e.target.value)}
+              style={{ ...inp, width: 'auto', cursor: 'pointer', color: filterStatus === 'all' ? 'rgba(255,255,255,.4)' : '#fff' }}>
+              <option value="all">كل الطلبات</option>
+              {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
+            </select>
           </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', border: '1px solid rgba(255,255,255,.05)', background: 'rgba(255,255,255,.02)' }}>
-            <div style={{ fontSize: '2rem', color: 'rgba(212,175,55,.1)', marginBottom: 12 }}>◉</div>
-            <div style={{ color: 'rgba(255,255,255,.25)', fontSize: '.85rem' }}>لا توجد طلبات</div>
-          </div>
-        ) : (
-          <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: selected ? '1fr 380px' : '1fr', gap: 20, alignItems: 'start' }}>
 
-            {/* Orders List */}
+          {/* Table / Cards */}
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} style={{ height: 64, background: CARD, border: '1px solid rgba(255,255,255,.04)', opacity: 1 - i * 0.12 }} />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '56px 0', color: 'rgba(255,255,255,.18)' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📭</div>
+              <p style={{ fontFamily: 'Tajawal', fontSize: '.9rem' }}>مفيش طلبات</p>
+            </div>
+          ) : mob ? (
+            // Mobile cards
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {filtered.map(o => {
-                const st = getStatus(o.orderStatus)
-                const isSelected = selected?._id === o._id
+              {filtered.map((o, i) => {
+                const s = STATUS[o.orderStatus] || STATUS.new
                 return (
-                  <div key={o._id} onClick={() => openDetail(o)}
-                    style={{ background: isSelected ? 'rgba(212,175,55,.05)' : 'rgba(255,255,255,.025)', border: `1px solid ${isSelected ? 'rgba(212,175,55,.2)' : 'rgba(255,255,255,.055)'}`, padding: isMobile ? '12px 14px' : '14px 18px', cursor: 'pointer', transition: 'all .2s', position: 'relative' }}>
-                    {isSelected && <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 2, background: '#D4AF37' }} />}
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div key={o._id} className="fade" style={{ animationDelay: `${i * 0.03}s`, background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '14px', cursor: 'pointer' }}
+                    onClick={() => setSelected(o)}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '.68rem', fontWeight: 700, color: '#D4AF37', letterSpacing: 1 }}>{o.orderNumber}</span>
-                          <span style={{ background: st.bg, color: st.color, padding: '2px 8px', fontSize: '.58rem', fontWeight: 700 }}>{st.label}</span>
-                        </div>
-                        <div style={{ fontWeight: 700, color: '#fff', fontSize: isMobile ? '.82rem' : '.88rem', marginBottom: 3 }}>{o.customer?.name}</div>
-                        <div style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.28)', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                          <span>{o.customer?.phone}</span>
-                          <span>·</span>
-                          <span style={{ color: 'rgba(212,175,55,.45)' }}>{timeAgo(o.createdAt)}</span>
-                        </div>
+                        <div style={{ fontSize: '.65rem', color: G, fontWeight: 700, marginBottom: 2 }}>{o.orderNumber}</div>
+                        <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#fff' }}>{o.customer?.name}</div>
+                        <div style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{o.customer?.governorate}</div>
                       </div>
-                      <div style={{ textAlign: 'left', flexShrink: 0 }}>
-                        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '.95rem' : '1.05rem', fontWeight: 700, color: '#fff' }}>
-                          {o.finalPrice} <span style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.3)', fontFamily: 'Tajawal' }}>ج</span>
+                      <div>
+                        <div style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: '.6rem', fontWeight: 700, padding: '3px 8px', textAlign: 'center', marginBottom: 4 }}>
+                          {s.icon} {s.label}
                         </div>
-                        <div style={{ fontSize: '.6rem', color: 'rgba(255,255,255,.25)', marginTop: 3 }}>
-                          {o.paymentMethod === 'cash' ? 'كاش' : o.paymentMethod === 'vodafone_cash' ? 'فودافون' : o.paymentMethod === 'instapay' ? 'انستاباي' : o.paymentMethod}
-                        </div>
+                        <div style={{ fontSize: '.78rem', fontWeight: 900, color: G, textAlign: 'left' }}>{o.finalPrice?.toLocaleString('ar-EG')} ج</div>
                       </div>
                     </div>
-
-                    {o.items?.length > 0 && (
-                      <div style={{ marginTop: 8, paddingTop: 7, borderTop: '1px solid rgba(255,255,255,.04)', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        {o.items.slice(0, isMobile ? 2 : 3).map((item, idx) => (
-                          <span key={idx} style={{ fontSize: '.6rem', color: 'rgba(255,255,255,.28)', background: 'rgba(255,255,255,.03)', padding: '2px 8px', border: '1px solid rgba(255,255,255,.05)' }}>
-                            {item.nameAr || item.name} × {item.quantity}
-                          </span>
-                        ))}
-                        {o.items.length > (isMobile ? 2 : 3) && <span style={{ fontSize: '.6rem', color: 'rgba(212,175,55,.5)', padding: '2px 6px' }}>+{o.items.length - (isMobile ? 2 : 3)}</span>}
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', gap: 4, overflowX: 'auto' }}>
+                      {STATUS_FLOW.filter(st => st !== o.orderStatus && st !== 'cancelled').slice(0, 3).map(st => (
+                        <button key={st} onClick={e => { e.stopPropagation(); updateStatus(o._id, st) }}
+                          disabled={updating === o._id}
+                          style={{ padding: '4px 10px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', color: 'rgba(255,255,255,.4)', fontFamily: 'Tajawal', fontSize: '.58rem', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          {STATUS[st]?.icon} {STATUS[st]?.label}
+                        </button>
+                      ))}
+                      {o.orderStatus !== 'cancelled' && o.orderStatus !== 'delivered' && (
+                        <button onClick={e => { e.stopPropagation(); updateStatus(o._id, 'cancelled') }}
+                          disabled={updating === o._id}
+                          style={{ padding: '4px 10px', background: 'rgba(239,68,68,.06)', border: '1px solid rgba(239,68,68,.15)', color: '#FCA5A5', fontFamily: 'Tajawal', fontSize: '.58rem', cursor: 'pointer', flexShrink: 0 }}>
+                          ✕ إلغاء
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )
               })}
             </div>
-
-            {/* Desktop Detail Panel */}
-            {!isMobile && selected && (
-              <div style={{ background: 'rgba(255,255,255,.02)', border: '1px solid rgba(212,175,55,.15)', position: 'sticky', top: 20, overflow: 'hidden' }}>
-                <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)' }} />
-                <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontSize: '.52rem', letterSpacing: 3, color: '#D4AF37', textTransform: 'uppercase', marginBottom: 3 }}>تفاصيل الطلب</div>
-                    <div style={{ fontWeight: 800, color: '#fff', fontSize: '.88rem' }}>{selected.orderNumber}</div>
+          ) : (
+            // Desktop table
+            <div style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', overflow: 'hidden' }}>
+              {/* Table header */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1fr .8fr 1.5fr', gap: 0, background: 'rgba(255,255,255,.03)', borderBottom: '1px solid rgba(255,255,255,.05)', padding: '10px 16px' }}>
+                {['رقم الطلب', 'العميل', 'المبلغ', 'الدفع', 'الحالة', 'تحديث الحالة'].map(h => (
+                  <div key={h} style={{ fontSize: '.58rem', fontWeight: 700, color: 'rgba(255,255,255,.25)', letterSpacing: 1.5, textTransform: 'uppercase' }}>{h}</div>
+                ))}
+              </div>
+              {/* Rows */}
+              {filtered.map((o, i) => {
+                const s = STATUS[o.orderStatus] || STATUS.new
+                const pay = PAYMENT[o.paymentMethod] || PAYMENT.cash
+                const isUpdating = updating === o._id
+                return (
+                  <div key={o._id} className={`fade ord-row`}
+                    style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1fr .8fr 1.5fr', gap: 0, padding: '13px 16px', borderBottom: '1px solid rgba(255,255,255,.03)', background: 'transparent', transition: 'background .2s', animationDelay: `${i * 0.025}s` }}
+                    onClick={() => setSelected(o)}>
+                    {/* Order # */}
+                    <div>
+                      <div style={{ fontSize: '.7rem', fontWeight: 700, color: G }}>{o.orderNumber}</div>
+                      <div style={{ fontSize: '.58rem', color: 'rgba(255,255,255,.2)', marginTop: 2 }}>
+                        {new Date(o.createdAt).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short' })}
+                      </div>
+                    </div>
+                    {/* Customer */}
+                    <div>
+                      <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#fff' }}>{o.customer?.name}</div>
+                      <div style={{ fontSize: '.62rem', color: 'rgba(255,255,255,.3)' }}>{o.customer?.phone} · {o.customer?.governorate}</div>
+                    </div>
+                    {/* Amount */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ fontSize: '.85rem', fontWeight: 900, color: G }}>{o.finalPrice?.toLocaleString('ar-EG')} ج</span>
+                    </div>
+                    {/* Payment */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ fontSize: '.75rem' }}>{pay.icon}</span>
+                      <span style={{ fontSize: '.68rem', color: 'rgba(255,255,255,.4)' }}>{pay.label}</span>
+                    </div>
+                    {/* Status */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: '.58rem', fontWeight: 800, padding: '3px 8px' }}>
+                        {s.icon} {s.label}
+                      </div>
+                    </div>
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+                      {isUpdating ? (
+                        <span style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>جاري...</span>
+                      ) : (
+                        <>
+                          {/* Next logical status */}
+                          {STATUS_FLOW.indexOf(o.orderStatus) < STATUS_FLOW.length - 1 && (
+                            <button onClick={() => updateStatus(o._id, STATUS_FLOW[STATUS_FLOW.indexOf(o.orderStatus) + 1])}
+                              style={{ padding: '4px 10px', background: `${s.color}12`, border: `1px solid ${s.color}30`, color: s.color, fontFamily: 'Tajawal', fontSize: '.6rem', fontWeight: 700, cursor: 'pointer', transition: 'all .2s' }}
+                              onMouseEnter={e => e.currentTarget.style.background = `${s.color}22`}
+                              onMouseLeave={e => e.currentTarget.style.background = `${s.color}12`}>
+                              {STATUS[STATUS_FLOW[STATUS_FLOW.indexOf(o.orderStatus) + 1]]?.icon} {STATUS[STATUS_FLOW[STATUS_FLOW.indexOf(o.orderStatus) + 1]]?.label}
+                            </button>
+                          )}
+                          {/* Cancel */}
+                          {o.orderStatus !== 'cancelled' && o.orderStatus !== 'delivered' && (
+                            <button onClick={() => updateStatus(o._id, 'cancelled')}
+                              style={{ padding: '4px 8px', background: 'rgba(239,68,68,.06)', border: '1px solid rgba(239,68,68,.15)', color: '#FCA5A5', fontFamily: 'Tajawal', fontSize: '.58rem', cursor: 'pointer' }}>
+                              ✕
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <button onClick={() => setSelected(null)} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)', color: 'rgba(255,255,255,.35)', width: 28, height: 28, cursor: 'pointer', fontSize: '.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
-                </div>
-                <DetailContent selected={selected} updateStatus={updateStatus} formatDate={formatDate} STATUSES={STATUSES} />
-              </div>
-            )}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile Detail Drawer */}
-      {isMobile && showDetail && selected && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 300 }}>
-          <div onClick={() => setShowDetail(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.7)' }} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#0A1628', borderRadius: '16px 16px 0 0', border: '1px solid rgba(212,175,55,.15)', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ width: 40, height: 4, background: 'rgba(255,255,255,.15)', borderRadius: 2, margin: '10px auto 0' }} />
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)', marginTop: 10 }} />
-            <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Order Details Drawer */}
+      {selected && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 400 }}>
+          <div onClick={() => setSelected(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.7)', backdropFilter: 'blur(4px)' }} />
+          <div style={{
+            position: 'absolute', top: 0, left: 0, bottom: 0, width: mob ? '100%' : 420,
+            background: '#070D1A', borderRight: '1px solid rgba(212,175,55,.12)',
+            overflowY: 'auto', animation: 'fi .25s ease both'
+          }}>
+            {/* Drawer Header */}
+            <div style={{ padding: '18px 20px', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: '#070D1A', zIndex: 1 }}>
               <div>
-                <div style={{ fontSize: '.52rem', letterSpacing: 3, color: '#D4AF37', textTransform: 'uppercase', marginBottom: 3 }}>تفاصيل الطلب</div>
-                <div style={{ fontWeight: 800, color: '#fff', fontSize: '.88rem' }}>{selected.orderNumber}</div>
+                <div style={{ fontSize: '.58rem', color: G, fontWeight: 700, letterSpacing: 2, marginBottom: 3 }}>{selected.orderNumber}</div>
+                <div style={{ fontSize: '.82rem', fontWeight: 900, color: '#fff' }}>تفاصيل الطلب</div>
               </div>
-              <button onClick={() => setShowDetail(false)} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)', color: 'rgba(255,255,255,.35)', width: 30, height: 30, cursor: 'pointer', fontSize: '.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+              <button onClick={() => setSelected(null)}
+                style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)', color: 'rgba(255,255,255,.4)', width: 32, height: 32, cursor: 'pointer', fontSize: '.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
             </div>
-            <DetailContent selected={selected} updateStatus={updateStatus} formatDate={formatDate} STATUSES={STATUSES} />
+
+            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+              {/* Status */}
+              <div>
+                <div style={{ fontSize: '.52rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>الحالة الحالية</div>
+                {/* Current status badge */}
+                <div style={{
+                  background: STATUS[selected.orderStatus]?.bg,
+                  border: `1px solid ${STATUS[selected.orderStatus]?.border}`,
+                  color: STATUS[selected.orderStatus]?.color,
+                  padding: '8px 14px', fontWeight: 700, fontSize: '.8rem',
+                  display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12
+                }}>
+                  {STATUS[selected.orderStatus]?.icon} {STATUS[selected.orderStatus]?.label}
+                </div>
+                {/* Only show next logical step + cancel */}
+                {selected.orderStatus !== 'delivered' && selected.orderStatus !== 'cancelled' && (
+                  <div>
+                    <div style={{ fontSize: '.52rem', letterSpacing: 2, color: 'rgba(255,255,255,.15)', textTransform: 'uppercase', marginBottom: 8 }}>تحديث إلى</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {/* Next step */}
+                      {STATUS_FLOW.indexOf(selected.orderStatus) < STATUS_FLOW.length - 1 && (() => {
+                        const nextKey = STATUS_FLOW[STATUS_FLOW.indexOf(selected.orderStatus) + 1]
+                        const next = STATUS[nextKey]
+                        return (
+                          <button onClick={() => updateStatus(selected._id, nextKey)}
+                            disabled={updating === selected._id}
+                            style={{ padding: '8px 16px', background: next.bg, border: `1px solid ${next.border}`, color: next.color, fontFamily: 'Tajawal', fontSize: '.72rem', fontWeight: 700, cursor: 'pointer', transition: 'all .2s' }}>
+                            {next.icon} {next.label}
+                          </button>
+                        )
+                      })()}
+                      {/* Cancel */}
+                      <button onClick={() => updateStatus(selected._id, 'cancelled')}
+                        disabled={updating === selected._id}
+                        style={{ padding: '8px 14px', background: 'rgba(239,68,68,.07)', border: '1px solid rgba(239,68,68,.18)', color: '#FCA5A5', fontFamily: 'Tajawal', fontSize: '.72rem', fontWeight: 700, cursor: 'pointer' }}>
+                        ✕ إلغاء الطلب
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Customer */}
+              <div style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '14px 16px' }}>
+                <div style={{ fontSize: '.52rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>بيانات العميل</div>
+                {[
+                  ['الاسم', selected.customer?.name],
+                  ['الموبايل', selected.customer?.phone],
+                  ['المحافظة', selected.customer?.governorate],
+                  ['العنوان', selected.customer?.address],
+                  ['البريد', selected.customer?.email || '—'],
+                ].map(([l, v]) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, gap: 12 }}>
+                    <span style={{ fontSize: '.68rem', color: 'rgba(255,255,255,.25)', flexShrink: 0 }}>{l}</span>
+                    <span style={{ fontSize: '.73rem', fontWeight: 600, color: 'rgba(255,255,255,.75)', textAlign: 'left', wordBreak: 'break-word' }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Items */}
+              <div style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '14px 16px' }}>
+                <div style={{ fontSize: '.52rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>المنتجات</div>
+                {selected.items?.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, paddingBottom: 10, borderBottom: i < selected.items.length - 1 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
+                    {item.image && (
+                      <img src={item.image} alt="" style={{ width: 44, height: 44, objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(255,255,255,.07)' }} />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#fff', marginBottom: 2 }}>{item.nameAr}</div>
+                      <div style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>
+                        {item.quantity} × {item.price?.toLocaleString('ar-EG')} ج = <span style={{ color: G, fontWeight: 700 }}>{(item.quantity * item.price)?.toLocaleString('ar-EG')} ج</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pricing breakdown */}
+              <div style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '14px 16px' }}>
+                <div style={{ fontSize: '.52rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>الفاتورة</div>
+                {[
+                  ['المجموع', `${selected.totalPrice?.toLocaleString('ar-EG')} ج`],
+                  ['الشحن', `${selected.shippingPrice?.toLocaleString('ar-EG')} ج`],
+                  selected.discount > 0 && ['خصم', `-${selected.discount?.toLocaleString('ar-EG')} ج`],
+                  selected.couponCode && ['كوبون', selected.couponCode],
+                ].filter(Boolean).map(([l, v]) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7 }}>
+                    <span style={{ fontSize: '.7rem', color: 'rgba(255,255,255,.3)' }}>{l}</span>
+                    <span style={{ fontSize: '.72rem', color: l === 'خصم' ? '#86EFAC' : 'rgba(255,255,255,.6)', fontWeight: 600 }}>{v}</span>
+                  </div>
+                ))}
+                <div style={{ height: 1, background: 'rgba(212,175,55,.1)', margin: '10px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '.78rem', fontWeight: 900, color: '#fff' }}>الإجمالي</span>
+                  <span style={{ fontSize: '1rem', fontWeight: 900, color: G }}>{selected.finalPrice?.toLocaleString('ar-EG')} ج</span>
+                </div>
+              </div>
+
+              {/* Payment */}
+              <div style={{ background: CARD, border: '1px solid rgba(255,255,255,.05)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '.7rem', color: 'rgba(255,255,255,.3)' }}>طريقة الدفع</span>
+                <span style={{ fontSize: '.78rem', fontWeight: 700, color: '#fff' }}>
+                  {PAYMENT[selected.paymentMethod]?.icon} {PAYMENT[selected.paymentMethod]?.label}
+                </span>
+              </div>
+
+              {/* Notes */}
+              {selected.notes && (
+                <div style={{ background: 'rgba(212,175,55,.04)', border: '1px solid rgba(212,175,55,.1)', padding: '12px 16px' }}>
+                  <div style={{ fontSize: '.52rem', letterSpacing: 2, color: `${G}66`, textTransform: 'uppercase', marginBottom: 6 }}>ملاحظات</div>
+                  <p style={{ fontSize: '.76rem', color: 'rgba(255,255,255,.5)', lineHeight: 1.7 }}>{selected.notes}</p>
+                </div>
+              )}
+
+              {/* Date */}
+              <div style={{ fontSize: '.65rem', color: 'rgba(255,255,255,.18)', textAlign: 'center' }}>
+                تاريخ الطلب: {new Date(selected.createdAt).toLocaleString('ar-EG', { dateStyle: 'full', timeStyle: 'short' })}
+              </div>
+
+            </div>
           </div>
         </div>
       )}
-    </div>
-  )
-}
-
-function DetailContent({ selected, updateStatus, formatDate, STATUSES }) {
-  return (
-    <div style={{ padding: '16px 18px', maxHeight: '70vh', overflowY: 'auto' }}>
-      <div style={{ background: 'rgba(212,175,55,.04)', border: '1px solid rgba(212,175,55,.1)', padding: '10px 12px', marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '.62rem', color: 'rgba(255,255,255,.3)' }}>تاريخ الطلب</span>
-        <span style={{ fontSize: '.68rem', fontWeight: 600, color: 'rgba(212,175,55,.8)' }}>{formatDate(selected.createdAt)}</span>
-      </div>
-
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: '.55rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>بيانات الزبون</div>
-        {[['الاسم', selected.customer?.name], ['الموبايل', selected.customer?.phone], ['المحافظة', selected.customer?.governorate], ['العنوان', selected.customer?.address]].filter(([, v]) => v).map(([l, v]) => (
-          <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7, fontSize: '.76rem' }}>
-            <span style={{ color: 'rgba(255,255,255,.28)' }}>{l}</span>
-            <span style={{ color: '#fff', fontWeight: 600, maxWidth: '65%', textAlign: 'left', wordBreak: 'break-word' }}>{v}</span>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: '.55rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>المنتجات</div>
-        {selected.items?.map((item, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-            <div>
-              <div style={{ fontSize: '.78rem', color: '#fff', fontWeight: 600 }}>{item.nameAr || item.name}</div>
-              <div style={{ fontSize: '.62rem', color: 'rgba(255,255,255,.25)' }}>× {item.quantity} · {item.price} ج</div>
-            </div>
-            <span style={{ fontSize: '.8rem', fontWeight: 700, color: '#D4AF37' }}>{item.price * item.quantity} ج</span>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.05)', padding: '10px 12px', marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, fontSize: '.74rem', color: 'rgba(255,255,255,.3)' }}>
-          <span>الدفع</span>
-          <span style={{ color: '#fff', fontWeight: 600 }}>{selected.paymentMethod === 'cash' ? 'كاش' : selected.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : selected.paymentMethod === 'instapay' ? 'انستاباي' : selected.paymentMethod}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 7, borderTop: '1px solid rgba(255,255,255,.04)' }}>
-          <span style={{ fontWeight: 700, color: '#fff', fontSize: '.82rem' }}>الإجمالي</span>
-          <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1rem', fontWeight: 700, color: '#D4AF37' }}>{selected.finalPrice} ج</span>
-        </div>
-      </div>
-
-      {selected.notes && (
-        <div style={{ background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.05)', padding: '10px 12px', marginBottom: 16 }}>
-          <div style={{ fontSize: '.55rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 6 }}>ملاحظات</div>
-          <div style={{ fontSize: '.76rem', color: 'rgba(255,255,255,.5)', lineHeight: 1.6 }}>{selected.notes}</div>
-        </div>
-      )}
-
-      <div>
-        <div style={{ fontSize: '.55rem', letterSpacing: 2, color: 'rgba(255,255,255,.2)', textTransform: 'uppercase', marginBottom: 10 }}>تحديث الحالة</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-          {STATUSES.filter(s => s.id !== 'all').map(s => (
-            <button key={s.id} onClick={() => updateStatus(selected._id, s.id)} style={{
-              padding: '8px', background: selected.orderStatus === s.id ? s.bg : 'rgba(255,255,255,.03)',
-              border: `1px solid ${selected.orderStatus === s.id ? s.color + '55' : 'rgba(255,255,255,.07)'}`,
-              color: selected.orderStatus === s.id ? s.color : 'rgba(255,255,255,.35)',
-              fontFamily: 'Tajawal', fontSize: '.7rem', fontWeight: selected.orderStatus === s.id ? 700 : 400, cursor: 'pointer', transition: 'all .2s'
-            }}>
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }

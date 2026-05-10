@@ -39,31 +39,31 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route path="/" element={<Discovery />} />
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/"         element={<Landing />} />
+        <Route path="/discover" element={<Discovery />} />
+        <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* Merchant Dashboard */}
-        <Route path="/dashboard" element={<Guard><Dashboard /></Guard>} />
-        <Route path="/dashboard/products" element={<Guard><Products /></Guard>} />
-        <Route path="/dashboard/orders" element={<Guard><Orders /></Guard>} />
-        <Route path="/dashboard/settings" element={<Guard><Settings /></Guard>} />
+        <Route path="/dashboard"           element={<Guard><Dashboard /></Guard>} />
+        <Route path="/dashboard/products"  element={<Guard><Products /></Guard>} />
+        <Route path="/dashboard/orders"    element={<Guard><Orders /></Guard>} />
+        <Route path="/dashboard/settings"  element={<Guard><Settings /></Guard>} />
         <Route path="/dashboard/analytics" element={<Guard><Analytics /></Guard>} />
-        <Route path="/dashboard/coupons" element={<Guard><Coupons /></Guard>} />
+        <Route path="/dashboard/coupons"   element={<Guard><Coupons /></Guard>} />
 
         {/* Store */}
-        <Route path="/store/:slug" element={<CustomerStore />} />
+        <Route path="/store/:slug"          element={<CustomerStore />} />
         <Route path="/store/:slug/checkout" element={<Checkout />} />
-        <Route path="/store/:slug/success" element={<OrderSuccess />} />
+        <Route path="/store/:slug/success"  element={<OrderSuccess />} />
 
         {/* Customer */}
-        <Route path="/customer/login" element={<CustomerLogin />} />
+        <Route path="/customer/login"     element={<CustomerLogin />} />
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-        <Route path="/track" element={<OrderTracker />} />
+        <Route path="/track"              element={<OrderTracker />} />
 
         {/* Admin */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/login"     element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
       </Routes>
     </BrowserRouter>
