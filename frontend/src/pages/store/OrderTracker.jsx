@@ -1,222 +1,251 @@
-// frontend/src/pages/store/OrderTracker.jsx
-import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { BASE } from '../../services/api'
 
-const BASE = `http://${window.location.hostname}:5000/api`
 const G = '#D4AF37'
 
-const STATUS_STEPS = [
-  { key: 'new',        label: 'تم الاستلام',    icon: '📋' },
-  { key: 'confirmed',  label: 'تم التأكيد',     icon: '✅' },
-  { key: 'processing', label: 'جاري التجهيز',   icon: '📦' },
-  { key: 'shipped',    label: 'في الطريق',      icon: '🚚' },
-  { key: 'delivered',  label: 'تم التوصيل',     icon: '🎉' },
+const STEPS = [
+  { key: 'new',        label: 'تم الاستلام',  icon: '📋' },
+  { key: 'confirmed',  label: 'تم التأكيد',   icon: '✅' },
+  { key: 'processing', label: 'جاري التجهيز', icon: '⚙️' },
+  { key: 'shipped',    label: 'في الطريق',    icon: '🚚' },
+  { key: 'delivered',  label: 'تم التوصيل',   icon: '🎉' },
 ]
+const STEP_IDX = { new:0, confirmed:1, processing:2, shipped:3, delivered:4, cancelled:-1 }
+const PAY_L = { cash:'كاش عند الاستلام 💵', vodafone_cash:'فودافون كاش 📱', instapay:'انستاباي ⚡', fawry:'فوري 🏪' }
 
-const STATUS_INDEX = { new: 0, confirmed: 1, processing: 2, shipped: 3, delivered: 4 }
-
-const METHOD_LABELS = {
-  cash: 'كاش عند الاستلام 💵',
-  vodafone_cash: 'فودافون كاش 📱',
-  instapay: 'انستاباي ⚡',
-  fawry: 'فوري 🏪',
+const useW = () => {
+  const [w, setW] = useState(window.innerWidth)
+  useEffect(() => { const h = () => setW(window.innerWidth); window.addEventListener('resize',h); return ()=>window.removeEventListener('resize',h) }, [])
+  return w
 }
 
 export default function OrderTracker() {
+  const nav = useNavigate()
   const [params] = useSearchParams()
-  const [orderNum, setOrderNum] = useState(params.get('order') || '')
-  const [order, setOrder] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [focused, setFocused] = useState(false)
+  const w = useW()
+  const mob = w < 768
 
-  const track = async e => {
-    e?.preventDefault()
-    if (!orderNum.trim()) return
+  const [orderNum, setOrderNum] = useState(params.get('order') || '')
+  const [order, setOrder]       = useState(null)
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
+
+  const track = async (num) => {
+    const n = (num || orderNum).trim().toUpperCase()
+    if (!n) return
     setLoading(true); setError(''); setOrder(null)
     try {
-      const res = await fetch(`${BASE}/customer/track/${orderNum.trim().toUpperCase()}`).then(r => r.json())
+      const res = await fetch(`${BASE}/customer/track/${n}`).then(r => r.json())
       if (res.success) setOrder(res.order)
       else setError('الطلب مش موجود — تأكد من الرقم')
-    } catch { setError('خطأ في الاتصال') }
+    } catch { setError('خطأ في الاتصال بالسيرفر') }
     setLoading(false)
   }
 
   // Auto-track if order number in URL
-  useState(() => { if (params.get('order')) track() }, [])
+  useEffect(() => { if (params.get('order')) track(params.get('order')) }, [])
 
-  const stepIdx = order ? (STATUS_INDEX[order.orderStatus] ?? -1) : -1
+  const stepIdx = order ? (STEP_IDX[order.orderStatus] ?? 0) : -1
+  const cancelled = order?.orderStatus === 'cancelled'
 
   return (
-    <div style={{
-      minHeight: '100vh', background: '#060F1E',
-      fontFamily: 'Tajawal', direction: 'rtl', color: '#EAE0C8',
-      padding: '0 0 60px', position: 'relative', overflow: 'hidden'
-    }}>
-      {/* Ambient */}
-      <div style={{ position: 'fixed', top: '-20%', right: '-10%', width: '50vw', height: '50vw', borderRadius: '50%', background: 'radial-gradient(circle,rgba(212,175,55,.05),transparent 65%)', pointerEvents: 'none' }} />
+    <div style={{ minHeight:'100vh', background:'#060F1E', fontFamily:'Tajawal', direction:'rtl', color:'#fff', position:'relative', overflow:'hidden' }}>
+      <style>{`
+        @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+        @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+        .tr-inp:focus{border-color:#D4AF37!important;background:rgba(212,175,55,.05)!important;outline:none}
+      `}</style>
 
-      {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,.06)', padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,.02)' }}>
-        <button onClick={() => nav(-1)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,.4)', cursor: 'pointer', fontSize: '1.2rem', padding: '0 8px 0 0', lineHeight: 1 }}>←</button>
-        <div style={{ width: 36, height: 36, border: `1.5px solid ${G}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: G }}>∞</div>
-        <div>
-          <div style={{ fontWeight: 900, color: '#fff', fontSize: '.9rem', letterSpacing: 1 }}>دايم ∞</div>
-          <div style={{ fontSize: '.6rem', letterSpacing: 2, color: 'rgba(212,175,55,.5)', textTransform: 'uppercase' }}>تتبع طلبك</div>
-        </div>
-      </div>
+      {/* BG ∞ */}
+      <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', fontSize: mob?'80vw':'50vw', color:'rgba(212,175,55,.02)', fontWeight:900, lineHeight:1, pointerEvents:'none', userSelect:'none' }}>∞</div>
 
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '40px 20px' }}>
-        {/* Search */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🔍</div>
-          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-            تتبع <em style={{ color: G, fontStyle: 'italic' }}>طلبك</em>
-          </h1>
-          <p style={{ fontSize: '.78rem', color: 'rgba(255,255,255,.3)' }}>
-            ادخل رقم الطلب اللي جالك في رسالة التأكيد
-          </p>
-        </div>
-
-        <form onSubmit={track}>
-          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-            <input
-              type="text" value={orderNum}
-              onChange={e => setOrderNum(e.target.value.toUpperCase())}
-              placeholder="DAY-00001"
-              style={{
-                flex: 1, padding: '13px 16px',
-                background: focused ? 'rgba(212,175,55,.05)' : 'rgba(255,255,255,.04)',
-                border: `1px solid ${focused ? G : 'rgba(255,255,255,.1)'}`,
-                fontFamily: "'JetBrains Mono', monospace", fontSize: '1rem',
-                color: '#fff', outline: 'none', letterSpacing: 2,
-                direction: 'ltr', textAlign: 'center', transition: 'all .2s'
+      {/* ── Header ── */}
+      <header style={{ background:'rgba(13,27,46,.97)', borderBottom:'1px solid rgba(255,255,255,.06)', backdropFilter:'blur(12px)', position:'sticky', top:0, zIndex:100 }}>
+        <div style={{ height:2, background:`linear-gradient(90deg,transparent,${G},transparent)` }} />
+        <div style={{ maxWidth:860, margin:'0 auto', padding: mob?'10px 14px':'12px 32px', display:'flex', alignItems:'center', gap:12, justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            {/* Back button — FIXED */}
+            <button
+              onClick={() => {
+                // Try to go back, if no history go to home
+                if (window.history.length > 1) nav(-1)
+                else nav('/')
               }}
-              onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-            />
-            <button type="submit" disabled={loading || !orderNum}
-              style={{
-                padding: '13px 24px', background: orderNum ? G : 'rgba(212,175,55,.3)',
-                border: 'none', color: '#0C2540', fontFamily: 'Tajawal',
-                fontWeight: 900, fontSize: '.88rem', cursor: orderNum ? 'pointer' : 'not-allowed',
-                transition: 'all .25s', whiteSpace: 'nowrap'
-              }}>
-              {loading ? '⏳' : 'تتبع ←'}
+              style={{ background:'transparent', border:'1px solid rgba(255,255,255,.1)', color:'rgba(255,255,255,.45)', cursor:'pointer', fontSize:'.76rem', fontFamily:'Tajawal', padding:'6px 12px', display:'flex', alignItems:'center', gap:5, transition:'all .2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=G; e.currentTarget.style.color=G }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.1)'; e.currentTarget.style.color='rgba(255,255,255,.45)' }}>
+              → رجوع
             </button>
           </div>
-        </form>
 
-        {error && (
-          <div style={{ background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', color: '#FCA5A5', padding: '12px 16px', textAlign: 'center', fontSize: '.82rem', marginBottom: 20 }}>
-            ⚠️ {error}
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:32, height:32, border:`1.5px solid ${G}`, display:'flex', alignItems:'center', justifyContent:'center', color:G, fontSize:'.9rem' }}>∞</div>
+            <div>
+              <div style={{ fontWeight:900, color:'#fff', fontSize:'.85rem', letterSpacing:1.5 }}>دايم</div>
+              <div style={{ fontSize:'.36rem', letterSpacing:3, color:`${G}55`, textTransform:'uppercase' }}>تتبع طلبك</div>
+            </div>
           </div>
-        )}
+        </div>
+      </header>
 
-        {/* Order Result */}
+      <div style={{ maxWidth:860, margin:'0 auto', padding: mob?'24px 14px':'40px 32px', position:'relative', zIndex:2 }}>
+
+        {/* ── Search box ── */}
+        <div style={{ textAlign:'center', marginBottom: order ? 28 : 60 }}>
+          <div style={{ fontSize:'2.5rem', marginBottom:12 }}>🔍</div>
+          <h1 style={{ fontFamily:'Playfair Display, serif', fontSize: mob?'1.8rem':'2.4rem', fontWeight:700, marginBottom:8, lineHeight:1.1 }}>
+            تتبع <em style={{ color:G, fontStyle:'italic' }}>طلبك</em>
+          </h1>
+          <p style={{ fontSize:'.82rem', color:'rgba(255,255,255,.3)', marginBottom:28, fontFamily:'Tajawal' }}>
+            ادخل رقم الطلب اللي جالك في رسالة التأكيد
+          </p>
+
+          <form onSubmit={e => { e.preventDefault(); track() }}
+            style={{ display:'flex', gap:0, maxWidth:500, margin:'0 auto', overflow:'hidden', border:`1px solid ${error?'rgba(239,68,68,.3)':G+'30'}`, transition:'border .2s' }}>
+            <button type="submit" disabled={loading}
+              style={{ padding:'0 20px', background: loading?'rgba(212,175,55,.4)':G, border:'none', color:'#0C2540', fontFamily:'Tajawal', fontWeight:900, cursor: loading?'not-allowed':'pointer', fontSize:'.85rem', flexShrink:0, transition:'all .2s', whiteSpace:'nowrap' }}>
+              {loading ? '⏳' : 'تتبع ←'}
+            </button>
+            <input
+              value={orderNum}
+              onChange={e => setOrderNum(e.target.value.toUpperCase())}
+              placeholder="DAY-00022"
+              className="tr-inp"
+              style={{ flex:1, padding:'13px 14px', background:'rgba(255,255,255,.03)', border:'none', fontFamily:'monospace', fontSize:'1rem', color:'#fff', letterSpacing:2, direction:'ltr', textAlign:'center', width:'100%' }}
+            />
+          </form>
+
+          {error && (
+            <div style={{ marginTop:12, color:'#FCA5A5', fontSize:'.78rem', fontFamily:'Tajawal' }}>⚠️ {error}</div>
+          )}
+        </div>
+
+        {/* ── Order Card ── */}
         {order && (
-          <div style={{ animation: 'fadeIn .4s ease' }}>
-            {/* Order header */}
-            <div style={{ background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.06)', padding: '20px', marginBottom: 16, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${G},transparent)` }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: '.85rem', color: G, fontWeight: 700, marginBottom: 4 }}>{order.orderNumber}</div>
-                  <div style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.3)' }}>
-                    {new Date(order.createdAt).toLocaleDateString('ar-EG', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  </div>
-                </div>
-                <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', fontWeight: 700, color: '#fff' }}>
-                  {order.finalPrice} <span style={{ fontSize: '.7rem', color: 'rgba(255,255,255,.3)' }}>ج</span>
+          <div style={{ animation:'fi .4s ease both' }}>
+
+            {/* Summary */}
+            <div style={{ background:'rgba(255,255,255,.025)', border:`1px solid ${G}20`, padding: mob?'16px 14px':'20px 24px', marginBottom:12, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12, position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${G}50,transparent)` }} />
+              <div>
+                <div style={{ fontSize:'.58rem', letterSpacing:3, color:`${G}77`, textTransform:'uppercase', fontWeight:800, marginBottom:4 }}>رقم الطلب</div>
+                <div style={{ fontFamily:'monospace', fontSize:'1.1rem', fontWeight:700, color:G, letterSpacing:2 }}>{order.orderNumber}</div>
+                <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.3)', marginTop:3 }}>
+                  {new Date(order.createdAt).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' })}
                 </div>
               </div>
-              <div style={{ fontSize: '.75rem', color: 'rgba(255,255,255,.4)' }}>
-                {METHOD_LABELS[order.paymentMethod] || order.paymentMethod}
+              <div style={{ textAlign:'left' }}>
+                <div style={{ fontSize:'.58rem', letterSpacing:3, color:'rgba(255,255,255,.25)', textTransform:'uppercase', fontWeight:800, marginBottom:4 }}>الإجمالي</div>
+                <div style={{ fontFamily:'Playfair Display, serif', fontSize:'1.5rem', fontWeight:700, color:'#fff' }}>{order.finalPrice?.toLocaleString('ar-EG')} ج</div>
+                <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.3)', marginTop:3 }}>{PAY_L[order.paymentMethod] || order.paymentMethod}</div>
               </div>
             </div>
 
-            {/* Store info */}
+            {/* Store */}
             {order.store && (
-              <div style={{ background: 'rgba(212,175,55,.04)', border: '1px solid rgba(212,175,55,.1)', padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-                {order.store.logo && <img src={order.store.logo} alt="" style={{ width: 36, height: 36, objectFit: 'cover', border: '1px solid rgba(212,175,55,.2)' }} />}
+              <div style={{ background:'rgba(255,255,255,.02)', border:'1px solid rgba(255,255,255,.06)', padding: mob?'12px 14px':'14px 24px', marginBottom:12, display:'flex', alignItems:'center', gap:12, cursor:'pointer' }}
+                onClick={() => nav(`/store/${order.store.slug}`)}>
+                {order.store.logo && (
+                  <div style={{ width:40, height:40, flexShrink:0, overflow:'hidden', border:`1px solid ${G}20` }}>
+                    <img src={order.store.logo} style={{ width:'100%', height:'100%', objectFit:'contain' }} />
+                  </div>
+                )}
                 <div>
-                  <div style={{ fontWeight: 700, color: '#fff', fontSize: '.88rem' }}>{order.store.name}</div>
-                  {order.store.phone && <div style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.3)', marginTop: 2 }}>للتواصل: {order.store.phone}</div>}
+                  <div style={{ fontSize:'.58rem', color:'rgba(255,255,255,.25)', letterSpacing:2, textTransform:'uppercase', marginBottom:2 }}>المتجر</div>
+                  <div style={{ fontSize:'.88rem', fontWeight:700, color:'#fff' }}>{order.store.name}</div>
                 </div>
+                <div style={{ marginRight:'auto', color:'rgba(255,255,255,.2)', fontSize:'.75rem' }}>←</div>
               </div>
             )}
 
-            {/* Progress Steps */}
-            {order.orderStatus !== 'cancelled' ? (
-              <div style={{ background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.06)', padding: '24px 20px', marginBottom: 16 }}>
-                <div style={{ fontSize: '.58rem', letterSpacing: 3, color: 'rgba(212,175,55,.6)', textTransform: 'uppercase', fontWeight: 800, marginBottom: 24 }}>حالة الطلب</div>
-                <div style={{ position: 'relative' }}>
+            {/* Status Timeline */}
+            <div style={{ background:'rgba(255,255,255,.025)', border:'1px solid rgba(255,255,255,.06)', padding: mob?'20px 14px':'24px', marginBottom:12, position:'relative', overflow:'hidden' }}>
+              <div style={{ fontSize:'.52rem', letterSpacing:3, color:G, textTransform:'uppercase', fontWeight:800, marginBottom:20 }}>حالة الطلب</div>
+
+              {cancelled ? (
+                <div style={{ textAlign:'center', padding:'20px 0' }}>
+                  <div style={{ fontSize:'2.5rem', marginBottom:10 }}>❌</div>
+                  <div style={{ color:'#FCA5A5', fontWeight:700, fontSize:'1rem' }}>تم إلغاء الطلب</div>
+                </div>
+              ) : (
+                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', position:'relative', overflowX: mob?'auto':'visible', paddingBottom: mob?4:0 }}>
                   {/* Progress line */}
-                  <div style={{ position: 'absolute', top: 20, right: 20, left: 20, height: 2, background: 'rgba(255,255,255,.06)', zIndex: 0 }} />
-                  <div style={{ position: 'absolute', top: 20, right: 20, height: 2, width: `${Math.max((stepIdx / (STATUS_STEPS.length - 1)) * 100, 0)}%`, background: `linear-gradient(90deg,${G},rgba(212,175,55,.4))`, zIndex: 1, transition: 'width 1s ease' }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
-                    {STATUS_STEPS.map((s, i) => {
-                      const done = i <= stepIdx
-                      const current = i === stepIdx
-                      return (
-                        <div key={s.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1 }}>
-                          <div style={{
-                            width: 40, height: 40,
-                            background: done ? G : 'rgba(255,255,255,.05)',
-                            border: `2px solid ${done ? G : 'rgba(255,255,255,.1)'}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '1.1rem', transition: 'all .4s',
-                            boxShadow: current ? `0 0 16px ${G}60` : 'none',
-                            transform: current ? 'scale(1.1)' : 'scale(1)',
-                          }}>
-                            {s.icon}
-                          </div>
-                          <div style={{ fontSize: '.58rem', color: done ? G : 'rgba(255,255,255,.25)', fontWeight: done ? 700 : 400, textAlign: 'center', transition: 'color .3s' }}>
-                            {s.label}
-                          </div>
-                        </div>
-                      )
-                    })}
+                  <div style={{ position:'absolute', top: mob?18:22, right: mob?20:20, left: mob?20:20, height:2, background:'rgba(255,255,255,.06)', zIndex:0 }}>
+                    <div style={{ height:'100%', background:G, width: stepIdx < 0 ? '0%' : `${(stepIdx / (STEPS.length-1)) * 100}%`, transition:'width .6s ease' }} />
                   </div>
+
+                  {STEPS.map((s, i) => {
+                    const done    = i <= stepIdx
+                    const current = i === stepIdx
+                    return (
+                      <div key={s.key} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, position:'relative', zIndex:1, flex:1, minWidth: mob?64:0 }}>
+                        <div style={{
+                          width: mob?36:44, height: mob?36:44, borderRadius:'50%',
+                          background: done ? (current ? G : `${G}22`) : 'rgba(255,255,255,.05)',
+                          border: `2px solid ${done ? G : 'rgba(255,255,255,.1)'}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize: mob?'.9rem':'1.1rem',
+                          boxShadow: current ? `0 0 0 4px ${G}22, 0 0 16px ${G}44` : 'none',
+                          transition:'all .4s',
+                          animation: current ? 'pulse 2s ease infinite' : 'none',
+                        }}>
+                          {s.icon}
+                        </div>
+                        <div style={{ fontSize: mob?'.52rem':'.6rem', color: done ? (current ? G : 'rgba(255,255,255,.5)') : 'rgba(255,255,255,.2)', fontWeight: current?800:400, textAlign:'center', fontFamily:'Tajawal', lineHeight:1.3 }}>
+                          {s.label}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-              </div>
-            ) : (
-              <div style={{ background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', padding: '16px', marginBottom: 16, textAlign: 'center', color: '#FCA5A5', fontSize: '.85rem', fontWeight: 700 }}>
-                ❌ تم إلغاء الطلب
+              )}
+            </div>
+
+            {/* Products */}
+            {order.items?.length > 0 && (
+              <div style={{ background:'rgba(255,255,255,.025)', border:'1px solid rgba(255,255,255,.06)', padding: mob?'16px 14px':'20px 24px', marginBottom:12 }}>
+                <div style={{ fontSize:'.52rem', letterSpacing:3, color:G, textTransform:'uppercase', fontWeight:800, marginBottom:16 }}>المنتجات</div>
+                {order.items.map((item, i) => (
+                  <div key={i} style={{ display:'flex', gap:12, padding:'10px 0', borderBottom: i < order.items.length-1 ? '1px solid rgba(255,255,255,.04)' : 'none', alignItems:'center' }}>
+                    <div style={{ width:44, height:44, flexShrink:0, background:'rgba(255,255,255,.04)', border:`1px solid ${G}15`, overflow:'hidden' }}>
+                      {item.image ? <img src={item.image} style={{ width:'100%', height:'100%', objectFit:'contain' }} /> : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', color:`${G}33`, fontSize:'1.2rem' }}>◆</div>}
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:'.82rem', fontWeight:700, color:'#fff', marginBottom:2 }}>{item.nameAr}</div>
+                      <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.3)' }}>الكمية: {item.quantity}</div>
+                    </div>
+                    <div style={{ fontFamily:'Playfair Display, serif', fontSize:'.88rem', fontWeight:700, color:G, flexShrink:0 }}>
+                      {(item.price * item.quantity)?.toLocaleString('ar-EG')} ج
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* Items */}
-            <div style={{ background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.06)', padding: '16px 20px' }}>
-              <div style={{ fontSize: '.58rem', letterSpacing: 3, color: 'rgba(212,175,55,.6)', textTransform: 'uppercase', fontWeight: 800, marginBottom: 14 }}>المنتجات</div>
-              {order.items?.map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < order.items.length - 1 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
-                  {item.image && <img src={item.image} alt="" style={{ width: 44, height: 44, objectFit: 'cover', border: '1px solid rgba(255,255,255,.08)' }} />}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '.85rem' }}>{item.nameAr}</div>
-                    <div style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.3)', marginTop: 2 }}>الكمية: {item.quantity}</div>
-                  </div>
-                  <div style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700, color: G, fontSize: '.9rem' }}>
-                    {item.price * item.quantity} ج
-                  </div>
+            {/* Pricing breakdown */}
+            <div style={{ background:'rgba(255,255,255,.025)', border:'1px solid rgba(255,255,255,.06)', padding: mob?'16px 14px':'20px 24px' }}>
+              <div style={{ fontSize:'.52rem', letterSpacing:3, color:G, textTransform:'uppercase', fontWeight:800, marginBottom:16 }}>الفاتورة</div>
+              {[
+                ['المنتجات', `${order.totalPrice?.toLocaleString('ar-EG')} ج`],
+                ['الشحن', `${(order.shippingPrice||0).toLocaleString('ar-EG')} ج`],
+                order.discount > 0 && ['خصم', `- ${order.discount?.toLocaleString('ar-EG')} ج`],
+              ].filter(Boolean).map(([l,v]) => (
+                <div key={l} style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,.04)', fontSize:'.76rem' }}>
+                  <span style={{ color:'rgba(255,255,255,.35)' }}>{l}</span>
+                  <span style={{ color: l==='خصم' ? '#86EFAC' : 'rgba(255,255,255,.6)', fontWeight:600 }}>{v}</span>
                 </div>
               ))}
+              <div style={{ display:'flex', justifyContent:'space-between', paddingTop:12, marginTop:4 }}>
+                <span style={{ fontWeight:900, color:'#fff', fontSize:'.85rem' }}>الإجمالي</span>
+                <span style={{ fontFamily:'Playfair Display, serif', fontSize:'1.1rem', fontWeight:700, color:G }}>{order.finalPrice?.toLocaleString('ar-EG')} ج</span>
+              </div>
             </div>
+
           </div>
         )}
 
-        {/* Login link */}
-        <div style={{ textAlign: 'center', marginTop: 32, padding: '20px', border: '1px solid rgba(255,255,255,.05)', background: 'rgba(255,255,255,.02)' }}>
-          <p style={{ fontSize: '.75rem', color: 'rgba(255,255,255,.3)', marginBottom: 12 }}>عايز تشوف كل طلباتك في مكان واحد؟</p>
-          <a href="/customer/login" style={{ color: G, fontSize: '.8rem', fontWeight: 700, textDecoration: 'none' }}>
-            سجل دخولك برقم موبايلك ←
-          </a>
-        </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-      `}</style>
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { merchantAPI } from '../../services/api'
 
-const useWindowWidth = () => {
+const useW = () => {
   const [w, setW] = useState(window.innerWidth)
   useEffect(() => {
     const h = () => setW(window.innerWidth)
@@ -14,8 +14,8 @@ const useWindowWidth = () => {
 
 export default function Login() {
   const nav = useNavigate()
-  const w = useWindowWidth()
-  const isMobile = w < 768
+  const w = useW()
+  const mob = w < 768
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -36,7 +36,7 @@ export default function Login() {
     setLoading(false)
   }
 
-  const inputStyle = (val) => ({
+  const inp = val => ({
     width: '100%', padding: '13px 16px',
     background: val ? 'rgba(212,175,55,.04)' : 'rgba(255,255,255,.04)',
     border: `1px solid ${val ? 'rgba(212,175,55,.25)' : 'rgba(255,255,255,.08)'}`,
@@ -46,11 +46,12 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#060F1E', display: 'flex', position: 'relative', overflow: 'hidden', fontFamily: 'Tajawal', direction: 'rtl' }}>
-      <div style={{ position: 'absolute', fontSize: isMobile ? '80vw' : '45vw', color: 'rgba(212,175,55,.025)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none', lineHeight: 1, userSelect: 'none' }}>∞</div>
+      {/* BG */}
+      <div style={{ position: 'absolute', fontSize: mob ? '80vw' : '45vw', color: 'rgba(212,175,55,.025)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none', lineHeight: 1, userSelect: 'none' }}>∞</div>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212,175,55,.06), transparent 70%)', pointerEvents: 'none' }} />
 
-      {/* Desktop — Left branding */}
-      {!isMobile && (
+      {/* Desktop branding */}
+      {!mob && (
         <div style={{ width: '42%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 5%', position: 'relative', zIndex: 2 }}>
           <div onClick={() => nav('/')} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 56 }}>
             <div style={{ width: 44, height: 44, border: '1.5px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', color: '#D4AF37' }}>∞</div>
@@ -72,7 +73,7 @@ export default function Login() {
           </p>
           <div style={{ border: '1px solid rgba(212,175,55,.1)', padding: '22px', background: 'rgba(212,175,55,.03)' }}>
             {['داشبورد مبيعاتك Real-time', 'إدارة المنتجات بالذكاء الاصطناعي', 'تتبع الطلبات والتوصيل', 'رابط متجرك المخصص'].map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: '.78rem', color: 'rgba(255,255,255,.45)', fontWeight: 300 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: i < 3 ? 10 : 0, fontSize: '.78rem', color: 'rgba(255,255,255,.45)', fontWeight: 300 }}>
                 <span style={{ color: '#D4AF37', fontSize: '.7rem' }}>◆</span>{t}
               </div>
             ))}
@@ -81,29 +82,26 @@ export default function Login() {
       )}
 
       {/* Form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '30px 20px' : '60px 5%', position: 'relative', zIndex: 2 }}>
-        <div style={{ width: '100%', maxWidth: isMobile ? '100%' : 440 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: mob ? '30px 20px' : '60px 5%', position: 'relative', zIndex: 2 }}>
+        <div style={{ width: '100%', maxWidth: mob ? '100%' : 440 }}>
 
-          {/* Mobile logo */}
-          {isMobile && (
+          {mob && (
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <div onClick={() => nav('/')} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 36, height: 36, border: '1.5px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#D4AF37' }}>∞</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff', letterSpacing: 2 }}>دايم</div>
               </div>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', marginBottom: 6 }}>
-                أهلاً بعودتك
-              </h1>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', marginBottom: 6 }}>أهلاً بعودتك</h1>
               <p style={{ fontSize: '.8rem', color: 'rgba(255,255,255,.35)' }}>سجّل دخول للداشبورد</p>
             </div>
           )}
 
-          <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(212,175,55,.12)', padding: isMobile ? '28px 20px' : '40px 36px', position: 'relative' }}>
+          <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(212,175,55,.12)', padding: mob ? '28px 20px' : '40px 36px', position: 'relative' }}>
             <div style={{ position: 'absolute', top: -1, right: -1, width: 24, height: 24, borderTop: '2px solid #D4AF37', borderRight: '2px solid #D4AF37' }} />
             <div style={{ position: 'absolute', bottom: -1, left: -1, width: 24, height: 24, borderBottom: '2px solid #D4AF37', borderLeft: '2px solid #D4AF37' }} />
             <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(212,175,55,.3), transparent)', position: 'absolute', top: 0, left: 0, right: 0 }} />
 
-            {!isMobile && (
+            {!mob && (
               <>
                 <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fff', marginBottom: 6 }}>تسجيل الدخول</h2>
                 <p style={{ fontSize: '.75rem', color: 'rgba(255,255,255,.3)', marginBottom: 28, fontWeight: 300 }}>أدخل بياناتك للوصول للداشبورد</p>
@@ -111,7 +109,10 @@ export default function Login() {
             )}
 
             {/* Google */}
-            <button onClick={() => alert('قريباً')} style={{ width: '100%', padding: '12px', marginBottom: 18, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#fff', fontFamily: 'Tajawal', fontWeight: 700, cursor: 'pointer', fontSize: '.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all .25s' }}>
+            <button onClick={() => alert('قريباً')}
+              style={{ width: '100%', padding: '12px', marginBottom: 18, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#fff', fontFamily: 'Tajawal', fontWeight: 700, cursor: 'pointer', fontSize: '.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all .25s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.08)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.05)' }}>
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -136,9 +137,9 @@ export default function Login() {
             <form onSubmit={submit}>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ display: 'block', fontSize: '.62rem', fontWeight: 700, color: 'rgba(255,255,255,.3)', marginBottom: 6, letterSpacing: 1.5, textTransform: 'uppercase' }}>البريد الإلكتروني</label>
-                <input name="email" type="email" placeholder="example@email.com" required value={form.email}
-                  onChange={e => setForm({ ...form, email: e.target.value })}
-                  style={inputStyle(form.email)}
+                <input name="email" type="email" placeholder="example@email.com" required
+                  value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                  style={inp(form.email)}
                   onFocus={e => { e.target.style.borderColor = '#D4AF37'; e.target.style.background = 'rgba(212,175,55,.06)' }}
                   onBlur={e => { e.target.style.borderColor = form.email ? 'rgba(212,175,55,.25)' : 'rgba(255,255,255,.08)'; e.target.style.background = form.email ? 'rgba(212,175,55,.04)' : 'rgba(255,255,255,.04)' }} />
               </div>
@@ -146,9 +147,9 @@ export default function Login() {
               <div style={{ marginBottom: 8 }}>
                 <label style={{ display: 'block', fontSize: '.62rem', fontWeight: 700, color: 'rgba(255,255,255,.3)', marginBottom: 6, letterSpacing: 1.5, textTransform: 'uppercase' }}>كلمة المرور</label>
                 <div style={{ position: 'relative' }}>
-                  <input name="password" type={showPass ? 'text' : 'password'} placeholder="••••••••" required value={form.password}
-                    onChange={e => setForm({ ...form, password: e.target.value })}
-                    style={{ ...inputStyle(form.password), paddingLeft: 44 }}
+                  <input name="password" type={showPass ? 'text' : 'password'} placeholder="••••••••" required
+                    value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
+                    style={{ ...inp(form.password), paddingLeft: 44 }}
                     onFocus={e => { e.target.style.borderColor = '#D4AF37'; e.target.style.background = 'rgba(212,175,55,.06)' }}
                     onBlur={e => { e.target.style.borderColor = form.password ? 'rgba(212,175,55,.25)' : 'rgba(255,255,255,.08)'; e.target.style.background = form.password ? 'rgba(212,175,55,.04)' : 'rgba(255,255,255,.04)' }} />
                   <button type="button" onClick={() => setShowPass(!showPass)}
@@ -162,14 +163,17 @@ export default function Login() {
                 <span style={{ fontSize: '.72rem', color: 'rgba(212,175,55,.5)', cursor: 'pointer' }}>نسيت كلمة المرور؟</span>
               </div>
 
-              <button type="submit" disabled={loading} style={{ width: '100%', padding: '14px', background: loading ? 'rgba(212,175,55,.3)' : '#D4AF37', color: '#0C2540', border: 'none', fontFamily: 'Tajawal', fontSize: '.9rem', fontWeight: 900, cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: 1 }}>
+              <button type="submit" disabled={loading}
+                style={{ width: '100%', padding: '14px', background: loading ? 'rgba(212,175,55,.3)' : '#D4AF37', color: '#0C2540', border: 'none', fontFamily: 'Tajawal', fontSize: '.9rem', fontWeight: 900, cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: 1, transition: 'all .2s' }}>
                 {loading ? '⏳ جاري الدخول...' : 'دخول للداشبورد ←'}
               </button>
             </form>
 
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: '.78rem', color: 'rgba(255,255,255,.25)' }}>
               مش عندك حساب؟{' '}
-              <span onClick={() => nav('/register')} style={{ color: '#D4AF37', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}>إنشاء متجر مجاناً</span>
+              <span onClick={() => nav('/register')} style={{ color: '#D4AF37', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}>
+                إنشاء متجرك ←
+              </span>
             </p>
           </div>
         </div>

@@ -3,24 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="دايم — منصة التجارة الإلكترونية الأولى للتاجر المصري. متجرك أونلاين في 5 دقايق من واتساب.">
+<meta name="description" content="دايم — منصة التجارة الإلكترونية الأولى للتاجر المصري. سجّل وارفع صورك، الـ AI يبني متجرك في ٥ دقايق.">
 <title>DAYEM ∞ — تجارتك بدون قيود</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∞</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════
-   DAYEM ∞ — PRODUCTION FINAL v5
-   All fixes:
-   ✓ Smart nav color detection (beige/navy aware)
-   ✓ RTL hero absolute positioning
-   ✓ WA demo plays on hover
-   ✓ Flow cards expand on hover
-   ✓ Features with decorative numbers
-   ✓ Roadmap timeline design
-   ✓ New pricing (100/199/349)
-   ✓ Refined float buttons
-   ✓ Performance optimized
+   DAYEM ∞ — PRODUCTION v7 (2026)
+   ✓ Interactive Dashboard Demo (auto-play + hover)
+   ✓ Real flow: سجّل → ارفع → AI → متجر
+   ✓ Pricing: 100/199/349 ج/شهر (no مجاناً)
+   ✓ cursor:pointer fixed on all buttons
+   ✓ Discover stores nav link
+   ✓ Roadmap updated to 2026
+   ✓ Mobile buttons fully clickable
+   ✓ All واتساب refs removed from product flow
 ═══════════════════════════════════════════════════ */
 :root{
   --N:  #0C2540;
@@ -39,16 +38,16 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--B3);color:var(--N);font-family:var(--tj);overflow-x:hidden;cursor:none;}
+body{background:var(--B3);color:var(--N);font-family:var(--tj);overflow-x:hidden;cursor:auto;}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:var(--N);}
 ::-webkit-scrollbar-thumb{background:var(--G);}
-@media(hover:none),(max-width:768px){*{cursor:auto!important;}body,button,a,div{cursor:auto!important;pointer-events:auto!important;}}
+@media(hover:none),(max-width:768px){*{cursor:auto!important;}button,a{cursor:pointer!important;}}
 
 /* ══ CURSOR ══ */
-#cur{position:fixed;z-index:9999;pointer-events:none;width:8px;height:8px;background:var(--G);border-radius:50%;top:-30px;left:-30px;transition:transform .12s,background .2s;}
+#cur{position:fixed;z-index:9999;pointer-events:none;width:8px;height:8px;background:var(--G);border-radius:50%;top:-100px;left:-100px;opacity:0;transition:transform .12s,background .2s,opacity .3s;}
 #cur.hov{transform:scale(2.2);}
-#cr{position:fixed;z-index:9998;pointer-events:none;width:34px;height:34px;border:1.5px solid rgba(212,175,55,.4);border-radius:50%;top:-30px;left:-30px;transition:width .25s var(--e),height .25s var(--e),border-color .25s;}
+#cr{position:fixed;z-index:9998;pointer-events:none;width:34px;height:34px;border:1.5px solid rgba(212,175,55,.4);border-radius:50%;top:-100px;left:-100px;opacity:0;transition:width .25s var(--e),height .25s var(--e),border-color .25s,opacity .3s;}
 #cr.hov{width:50px;height:50px;border-color:rgba(212,175,55,.7);}
 @media(hover:none),(max-width:768px){#cur,#cr{display:none!important;}}
 
@@ -61,7 +60,7 @@ body{background:var(--B3);color:var(--N);font-family:var(--tj);overflow-x:hidden
 .fab-btn{
   width:46px;height:46px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  border:none;cursor:none;
+  border:none;cursor:pointer;
   transition:transform .25s var(--e),box-shadow .25s,opacity .3s,visibility .3s;
   opacity:0;visibility:hidden;
 }
@@ -80,10 +79,13 @@ body{background:var(--B3);color:var(--N);font-family:var(--tj);overflow-x:hidden
 /* ══ NAV — smart color ══ */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:800;
-  padding:18px 5%;
+  padding:14px 5%;
   display:flex;justify-content:space-between;align-items:center;
   transition:all .45s var(--e);
-  border-bottom:1px solid transparent;
+  border-bottom:1px solid rgba(212,175,55,.1);
+  background:rgba(6,15,30,.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
 }
 /* Dark nav (on navy sections or scrolled) */
 nav.dark{
@@ -94,8 +96,8 @@ nav.dark{
 }
 /* Light nav (on beige sections, not scrolled) */
 nav.light .n-ar{color:var(--N)!important;}
-nav.light .nls a{color:rgba(12,37,64,.9)!important;font-weight:800;}
-nav.light .nls a:hover{color:var(--N2)!important;}
+nav.light .nls a{color:rgba(255,255,255,.9)!important;font-weight:700;}
+nav.light .nls a:hover{color:var(--G)!important;}
 nav.light .nb{border-color:var(--N2)!important;}
 nav.light .nb i{color:var(--N2)!important;}
 nav.light .ncta{background:var(--N);color:var(--W);}
@@ -107,16 +109,16 @@ nav.light .n-en{color:var(--G3)!important;}
 .nl:hover .nb::before{transform:scaleY(1);}
 .nb i{position:relative;z-index:1;font-style:normal;transition:color .3s;}
 .nl:hover .nb i{color:var(--N);}
-.nt{display:flex;flex-direction:column;gap:1px;}
-.n-ar{font-family:var(--tj);font-size:1.1rem;font-weight:900;color:var(--W);letter-spacing:2px;line-height:1.1;transition:color .3s;}
+.nt{display:flex;flex-direction:column;gap:1px;} .n-ar,.n-en{display:block!important;}
+.n-ar{font-family:var(--tj);font-size:1.1rem;font-weight:900;color:#fff!important;letter-spacing:2px;line-height:1.1;transition:color .3s;}
 .n-en{font-size:.48rem;letter-spacing:4px;color:var(--G);text-transform:uppercase;font-weight:700;transition:color .3s;}
 .nr{display:flex;align-items:center;gap:20px;}
 .nls{display:flex;gap:24px;list-style:none;}
-.nls a{font-size:.72rem;font-weight:600;letter-spacing:1.5px;color:rgba(255,255,255,.82);text-decoration:none;text-transform:uppercase;transition:color .25s;font-weight:700;position:relative;}
+.nls a{font-size:.72rem;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.92);text-decoration:none;text-transform:uppercase;transition:color .25s;position:relative;}
 .nls a::after{content:'';position:absolute;bottom:-3px;right:0;left:0;height:1px;background:var(--G);transform:scaleX(0);transition:transform .32s var(--e);}
 .nls a:hover{color:var(--G);}
 .nls a:hover::after{transform:scaleX(1);}
-.ncta{background:var(--G);color:var(--N);border:none;padding:10px 20px;font-family:var(--tj);font-size:.73rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:all .25s;}
+.ncta{background:var(--G);color:var(--N);border:none;padding:10px 20px;font-family:var(--tj);font-size:.73rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .25s;}
 .ncta:hover{background:var(--G2);box-shadow:0 6px 22px rgba(212,175,55,.35);transform:translateY(-1px);}
 .nham{display:none;flex-direction:column;gap:5px;background:transparent;border:1.5px solid rgba(212,175,55,.38);width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer!important;-webkit-tap-highlight-color:rgba(212,175,55,.2);touch-action:manipulation;}
 .nham span{width:18px;height:1.5px;background:var(--G);display:block;transition:all .3s;}
@@ -142,12 +144,12 @@ nav.light .n-en{color:var(--G3)!important;}
 .hdesc{font-size:.88rem;font-weight:300;color:rgba(12,37,64,.55);line-height:1.9;max-width:380px;margin-bottom:34px;animation:fUp .7s ease .6s both;}
 .hdesc b{color:var(--N2);font-weight:700;}
 .hbtns{display:flex;gap:10px;flex-wrap:wrap;animation:fUp .7s ease .72s both;}
-.btn-fill{background:var(--N);color:var(--W);border:none;padding:13px 28px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .35s;}
+.btn-fill{background:var(--N);color:var(--W);border:none;padding:13px 28px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:color .35s;}
 .btn-fill::after{content:'';position:absolute;inset:0;background:var(--G);transform:scaleX(0);transform-origin:left;transition:transform .32s var(--e);}
 .btn-fill:hover::after{transform:scaleX(1);}
 .btn-fill:hover{color:var(--N);}
 .btn-fill span{position:relative;z-index:1;}
-.btn-ghost{background:transparent;color:rgba(12,37,64,.48);border:none;padding:13px 0;font-family:var(--tj);font-size:.78rem;font-weight:600;cursor:none;transition:color .22s;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(12,37,64,.14);}
+.btn-ghost{background:transparent;color:rgba(12,37,64,.48);border:none;padding:13px 0;font-family:var(--tj);font-size:.78rem;font-weight:600;cursor:pointer;transition:color .22s;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(12,37,64,.14);}
 .btn-ghost:hover{color:var(--N);text-decoration-color:var(--G);}
 .hstats{display:flex;gap:0;margin-top:40px;padding-top:24px;border-top:1px solid rgba(17,52,89,.1);animation:fUp .7s ease .88s both;}
 .hs{flex:1;padding-left:16px;border-left:1px solid rgba(17,52,89,.08);}
@@ -255,46 +257,116 @@ nav.light .n-en{color:var(--G3)!important;}
 @media(max-width:840px){.stop{grid-template-columns:1fr;gap:36px;}.flow{grid-template-columns:1fr 1fr;}}
 @media(max-width:420px){.flow{grid-template-columns:1fr;}}
 
-/* ══ WHATSAPP — hover replay ══ */
-.wabg{background:var(--N2);border-top:1px solid rgba(212,175,55,.11);position:relative;overflow:hidden;}
-.wabg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 65% at 22% 50%,rgba(212,175,55,.042),transparent 68%);pointer-events:none;}
-.wawrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
-.waph{max-width:280px;margin:0 auto;background:#0a1520;border:1px solid rgba(212,175,55,.17);border-radius:22px;overflow:hidden;box-shadow:0 48px 96px rgba(0,0,0,.48),0 0 0 1px rgba(212,175,55,.055);position:relative;z-index:2;transition:box-shadow .3s;}
-.waph:hover{box-shadow:0 56px 110px rgba(0,0,0,.55),0 0 0 1px rgba(212,175,55,.12),0 0 40px rgba(212,175,55,.08);}
-.wpb{background:#0f1e2e;padding:7px 15px;display:flex;justify-content:space-between;}
-.wpb span{font-size:.56rem;color:rgba(255,255,255,.36);}
-.wph2{background:#0d2a1a;padding:11px 13px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(37,211,102,.09);}
-.wpav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--G),#8B6914);display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0;}
-.wpnm{font-size:.77rem;font-weight:700;color:var(--W);}
-.wpst{font-size:.54rem;color:#25D366;}
-.wpmsgs{padding:11px;background:#0a160a;display:flex;flex-direction:column;gap:7px;min-height:260px;max-height:300px;overflow-y:auto;overflow-x:hidden;}
-.wm{max-width:86%;padding:8px 11px;font-size:.68rem;line-height:1.48;border-radius:10px;opacity:0;transform:translateY(6px);transition:opacity .32s,transform .32s;}
-.wm.show{opacity:1;transform:translateY(0);}
-.wm.i{background:#192a19;border-radius:0 10px 10px 10px;align-self:flex-start;color:rgba(255,255,255,.76);}
-.wm.o{background:#1a3a6a;border-radius:10px 0 10px 10px;align-self:flex-end;color:var(--W);}
-.wmt{font-size:.5rem;color:rgba(255,255,255,.2);margin-top:3px;}
-.wm.o .wmt{text-align:left;}
-.wmcard{background:rgba(212,175,55,.065);border:1px solid rgba(212,175,55,.16);border-radius:7px;padding:9px;margin-top:4px;}
-.wmch{font-size:.66rem;font-weight:700;color:var(--G);margin-bottom:2px;}
-.wmcu{font-size:.58rem;color:#4A8FE0;margin-bottom:2px;}
-.wmcs{font-size:.54rem;color:rgba(255,255,255,.26);}
-.wptyp{display:none;align-items:center;gap:4px;padding:8px 12px;background:#192a19;border-radius:0 10px 10px 10px;align-self:flex-start;}
-.wptyp.show{display:flex;}
-.wptyp span{width:6px;height:6px;background:rgba(255,255,255,.36);border-radius:50%;animation:tb 1.4s infinite;}
-.wptyp span:nth-child(2){animation-delay:.2s;}
-.wptyp span:nth-child(3){animation-delay:.4s;}
-@keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
-.wpinp{background:#0d2a1a;padding:8px 11px;display:flex;gap:7px;align-items:center;}
-.wpinp input{flex:1;background:rgba(255,255,255,.048);border:none;border-radius:15px;padding:6px 10px;font-size:.66rem;color:rgba(255,255,255,.42);outline:none;}
-.wpsnd{width:27px;height:27px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.66rem;flex-shrink:0;}
+/* ══ DASHBOARD INTERACTIVE DEMO ══ */
+.wabg{background:var(--N);border-top:1px solid rgba(212,175,55,.1);position:relative;overflow:hidden;padding-top:80px;padding-bottom:80px;}
+.wabg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 60% at 70% 50%,rgba(212,175,55,.025),transparent 70%);pointer-events:none;}
+.wawrap{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:center;}
+/* Steps */
 .wasts{position:relative;z-index:2;}
-.wst{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.038);transition:all .22s;}
+.wst{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:all .25s;border-radius:0;}
 .wst:last-child{border:none;}
-.wst:hover .wstic{border-color:var(--G);background:rgba(212,175,55,.07);}
-.wstic{width:35px;height:35px;border-radius:50%;border:1px solid rgba(212,175,55,.17);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;transition:all .32s;}
-.wstt{font-family:var(--tj);font-size:.82rem;font-weight:700;color:var(--W);margin-bottom:2px;}
-.wstd{font-size:.68rem;color:rgba(255,255,255,.32);line-height:1.6;font-weight:300;}
-@media(max-width:840px){.wawrap{grid-template-columns:1fr;}.waph{max-width:305px;}.wasts{order:-1;}}
+.wst.active .wstic{border-color:var(--G);background:rgba(212,175,55,.12);color:var(--G);}
+.wst.active .wstt{color:var(--G);}
+.wst.active .wstd{color:rgba(255,255,255,.5);}
+.wst:hover .wstic{border-color:rgba(212,175,55,.4);}
+.wstic{width:36px;height:36px;border-radius:50%;border:1px solid rgba(212,175,55,.15);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .28s;}
+.wstt{font-family:var(--tj);font-size:.83rem;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:2px;transition:color .22s;}
+.wstd{font-size:.67rem;color:rgba(255,255,255,.25);line-height:1.6;transition:color .22s;}
+/* Mockup wrapper */
+.dm-outer{position:relative;z-index:2;}
+.dm-laptop{background:#0A1628;border:1px solid rgba(212,175,55,.18);box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.06),0 0 60px rgba(212,175,55,.04);overflow:hidden;transition:box-shadow .3s;}
+/* Topbar */
+.dm-bar{background:#0C1E35;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(212,175,55,.08);}
+.dm-bar-logo{font-size:.65rem;font-weight:900;color:#D4AF37;letter-spacing:2px;}
+.dm-bar-pg{font-size:.52rem;color:rgba(255,255,255,.2);letter-spacing:1px;}
+.dm-bar-dots{display:flex;gap:4px;}
+.dm-bar-dot{width:7px;height:7px;border-radius:50%;}
+/* Progress bar */
+.dm-progress{height:2px;background:rgba(255,255,255,.04);position:relative;}
+.dm-progress-fill{height:100%;background:linear-gradient(90deg,#D4AF37,#F0D060);transition:width .6s ease;}
+/* Slides */
+.dm-body{position:relative;min-height:320px;}
+.dm-slide{display:none;padding:18px;animation:dmIn .35s ease both;}
+.dm-slide.on{display:block;}
+@keyframes dmIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+/* Slide shared */
+.dm-step-label{font-size:.44rem;letter-spacing:3px;color:rgba(212,175,55,.45);text-transform:uppercase;font-weight:700;margin-bottom:10px;}
+/* Slide 1 — Register */
+.dm-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:12px;}
+.dm-plan{border:1px solid rgba(255,255,255,.06);padding:9px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.dm-plan.sel{border-color:rgba(212,175,55,.35);background:rgba(212,175,55,.06);}
+.dm-plan-nm{font-size:.55rem;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:3px;}
+.dm-plan.sel .dm-plan-nm{color:#D4AF37;}
+.dm-plan-pr{font-size:.9rem;font-weight:900;color:#fff;line-height:1;}
+.dm-plan-su{font-size:.44rem;color:rgba(255,255,255,.2);}
+.dm-fields{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.dm-field{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:8px 11px;display:flex;justify-content:space-between;align-items:center;}
+.dm-field-lbl{font-size:.6rem;color:rgba(255,255,255,.3);}
+.dm-field-val{font-size:.62rem;color:#D4AF37;font-weight:700;}
+.dm-field.filled{border-color:rgba(212,175,55,.18);background:rgba(212,175,55,.03);}
+.dm-cta{width:100%;padding:9px;background:#D4AF37;color:#0C2540;border:none;font-family:var(--tj);font-weight:900;font-size:.72rem;cursor:pointer;transition:background .2s;}
+.dm-cta:hover{background:#F0D060;}
+/* Slide 2 — AI Analysis */
+.dm-upload{border:1.5px dashed rgba(212,175,55,.18);padding:14px;text-align:center;margin-bottom:12px;background:rgba(212,175,55,.02);}
+.dm-upload-ico{font-size:1.6rem;margin-bottom:4px;}
+.dm-upload-txt{font-size:.62rem;color:rgba(255,255,255,.3);}
+.dm-upload-sub{font-size:.52rem;color:rgba(255,255,255,.15);margin-top:2px;}
+.dm-ai-status{background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.12);padding:10px 12px;margin-bottom:10px;}
+.dm-ai-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.dm-ai-ico{font-size:.9rem;}
+.dm-ai-title{font-size:.68rem;font-weight:700;color:#D4AF37;}
+.dm-ai-msg{font-size:.56rem;color:rgba(212,175,55,.45);margin-top:1px;}
+.dm-prog-bar{height:3px;background:rgba(255,255,255,.05);overflow:hidden;margin-bottom:8px;}
+.dm-prog-fill{height:100%;background:linear-gradient(90deg,#D4AF37,#F0D060);width:0;transition:width 2.5s ease;}
+.dm-prog-fill.go{width:100%;}
+.dm-prods-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;min-height:80px;}
+.dm-prod-mini{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);overflow:hidden;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s;}
+.dm-prod-mini.show{opacity:1;transform:translateY(0);}
+.dm-prod-mini-img{height:40px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:rgba(255,255,255,.02);}
+.dm-prod-mini-info{padding:4px 5px;}
+.dm-prod-mini-name{font-size:.5rem;color:rgba(255,255,255,.6);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dm-prod-mini-price{font-size:.55rem;font-weight:900;color:#D4AF37;}
+.dm-prod-mini-badge{font-size:.38rem;color:rgba(34,197,94,.6);display:block;margin-top:1px;}
+/* Slide 3 — Store Live */
+.dm-store-hd{background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.1);padding:9px 11px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.dm-store-av{width:28px;height:28px;background:linear-gradient(135deg,#D4AF37,#8B6914);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900;color:#0C2540;flex-shrink:0;}
+.dm-store-info{flex:1;}
+.dm-store-name{font-size:.72rem;font-weight:900;color:#fff;}
+.dm-store-url{font-size:.54rem;color:#4A8FE0;}
+.dm-live-badge{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22C55E;font-size:.44rem;font-weight:800;padding:2px 7px;letter-spacing:1px;flex-shrink:0;}
+.dm-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
+.dm-stat-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:8px 6px;text-align:center;}
+.dm-stat-n{font-size:1rem;font-weight:900;color:#D4AF37;display:block;line-height:1;}
+.dm-stat-l{font-size:.44rem;color:rgba(255,255,255,.2);display:block;margin-top:3px;letter-spacing:1px;}
+.dm-orders-list{display:flex;flex-direction:column;gap:4px;}
+.dm-order-row{display:flex;justify-content:space-between;align-items:center;padding:6px 9px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);}
+.dm-order-l{flex:1;}
+.dm-order-name{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.75);}
+.dm-order-sub{font-size:.52rem;color:rgba(255,255,255,.25);}
+.dm-badge-new{background:rgba(212,175,55,.08);color:#D4AF37;border:1px solid rgba(212,175,55,.18);font-size:.44rem;font-weight:800;padding:2px 6px;}
+.dm-badge-done{background:rgba(34,197,94,.07);color:#22C55E;border:1px solid rgba(34,197,94,.15);font-size:.44rem;font-weight:800;padding:2px 6px;}
+/* Slide 4 — Analytics */
+.dm-chart-title{font-size:.52rem;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:8px;letter-spacing:1.5px;text-transform:uppercase;}
+.dm-bars{display:flex;align-items:flex-end;gap:4px;height:64px;margin-bottom:12px;}
+.dm-bar-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
+.dm-bar-fill{width:100%;background:rgba(212,175,55,.14);border-top:1.5px solid rgba(212,175,55,.28);min-height:4px;transition:height 1s ease;}
+.dm-bar-fill.peak{background:rgba(212,175,55,.32);border-color:#D4AF37;}
+.dm-bar-lbl{font-size:.38rem;color:rgba(255,255,255,.18);}
+.dm-an-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.dm-an-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);padding:9px 10px;}
+.dm-an-val{font-size:1.05rem;font-weight:900;color:#D4AF37;line-height:1;}
+.dm-an-lbl{font-size:.5rem;color:rgba(255,255,255,.22);margin-top:2px;display:block;}
+.dm-an-up{font-size:.5rem;color:#22C55E;margin-top:4px;display:block;}
+/* Nav dots */
+.dm-dots{display:flex;justify-content:center;gap:6px;padding:10px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.04);}
+@media(max-width:840px){.wawrap{grid-template-columns:1fr!important;gap:32px!important;}.dm-outer{order:-1;}.wasts{order:1;}}
+.dm-dot{width:16px;height:2px;background:rgba(255,255,255,.08);cursor:pointer;transition:all .25s;}
+.dm-dot.on{background:#D4AF37;width:24px;}
+@media(max-width:860px){
+  .wawrap{grid-template-columns:1fr;gap:32px;}
+  .wasts{order:1;}
+  .dm-outer{order:0;}
+}
 
 /* ══ NUMBERS ══ */
 .nubg{background:var(--B3);border-top:1px solid rgba(17,52,89,.07);}
@@ -336,22 +408,22 @@ nav.light .n-en{color:var(--G3)!important;}
 
 /* ══ PRICING — new structure ══ */
 .prbg{background:var(--N);border-top:1px solid rgba(212,175,55,.11);}
-.prgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(212,175,55,.09);margin-top:52px;}
-.prc{background:rgba(255,255,255,.022);padding:44px 32px;position:relative;transition:background .3s;overflow:hidden;cursor:default;}
+.prgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(212,175,55,.09);margin-top:36px;align-items:stretch;}
+.prc{background:rgba(255,255,255,.022);padding:28px 24px;position:relative;transition:background .3s;overflow:hidden;cursor:default;display:flex;flex-direction:column;}
 .prc::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:var(--G);transform:scaleX(0);transition:transform .42s var(--e);}
 .prc:hover::before{transform:scaleX(1);}
 .prc:hover{background:rgba(255,255,255,.048);}
 .prc.hot{background:rgba(212,175,55,.07);}
-.prcbadge{position:absolute;top:0;right:50%;transform:translateX(50%);background:var(--G);color:var(--N);font-size:.52rem;font-weight:800;padding:4px 15px;letter-spacing:2px;text-transform:uppercase;}
+.prcbadge{position:absolute;top:0;right:50%;transform:translateX(50%);background:var(--G);color:var(--N);font-size:.5rem;font-weight:800;padding:5px 16px;letter-spacing:2px;text-transform:uppercase;}
 .prcname{font-size:.54rem;letter-spacing:4px;color:rgba(255,255,255,.26);text-transform:uppercase;font-weight:800;margin-bottom:12px;}
-.prc.hot .prcname{margin-top:14px;}
-.prcprice{font-family:var(--pf);font-size:3.5rem;font-weight:700;color:var(--W);line-height:1;}
-.prcprice sub{font-family:var(--tj);font-size:.75rem;font-weight:300;color:rgba(255,255,255,.26);vertical-align:baseline;}
+.prc.hot{padding-top:44px;}.prc.hot .prcname{margin-top:0;}
+.prcprice{font-family:var(--pf);font-size:2.6rem;font-weight:700;color:var(--W);line-height:1;}
+.prcprice sub{font-family:var(--tj);font-size:.68rem;font-weight:300;color:rgba(255,255,255,.26);vertical-align:baseline;}
 .prcdesc{font-size:.72rem;color:rgba(255,255,255,.35);font-weight:300;margin-top:8px;margin-bottom:0;line-height:1.6;}
-.prcdiv{height:1px;background:rgba(255,255,255,.055);margin:20px 0;}
-.prcf{display:flex;align-items:center;gap:9px;font-size:.77rem;color:rgba(255,255,255,.46);margin-bottom:9px;font-weight:300;}
+.prcdiv{height:1px;background:rgba(255,255,255,.055);margin:12px 0;}
+.prcf{display:flex;align-items:center;gap:8px;font-size:.74rem;color:rgba(255,255,255,.46);margin-bottom:7px;font-weight:300;}
 .prcf::before{content:'';width:12px;height:1px;background:var(--G);flex-shrink:0;}
-.prcbtn{width:100%;padding:12px;font-family:var(--tj);font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:all .28s;margin-top:20px;border:none;}
+.prcbtn{width:100%;padding:10px;font-family:var(--tj);font-size:.68rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .28s;margin-top:auto;padding-top:16px;border:none;}
 .prcbtn.ol{background:transparent;border:1.5px solid rgba(212,175,55,.2);color:rgba(255,255,255,.36);}
 .prcbtn.ol:hover{border-color:var(--G);color:var(--G);}
 .prcbtn.fl{background:var(--G);color:var(--N);}
@@ -399,9 +471,9 @@ nav.light .n-en{color:var(--G3)!important;}
 .ctah em{font-family:var(--pf);font-style:italic;color:var(--G);}
 .ctap{font-size:.86rem;color:rgba(255,255,255,.32);margin-bottom:42px;position:relative;z-index:2;font-weight:300;}
 .ctabtns{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;}
-.btng{background:var(--G);color:var(--N);border:none;padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:background .22s,box-shadow .22s,transform .18s;}
+.btng{background:var(--G);color:var(--N);border:none;padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .22s,box-shadow .22s,transform .18s;}
 .btng:hover{background:var(--G2);transform:translateY(-2px);box-shadow:0 9px 28px rgba(212,175,55,.26);}
-.btno{background:transparent;color:rgba(255,255,255,.43);border:1.5px solid rgba(212,175,55,.23);padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:none;transition:border-color .22s,color .22s;}
+.btno{background:transparent;color:rgba(255,255,255,.43);border:1.5px solid rgba(212,175,55,.23);padding:14px 36px;font-family:var(--tj);font-size:.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:border-color .22s,color .22s;}
 .btno:hover{border-color:var(--G);color:var(--G);}
 .ctacs{display:flex;justify-content:center;gap:44px;margin-top:44px;flex-wrap:wrap;position:relative;z-index:2;}
 .ccl{font-size:.48rem;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;display:block;margin-bottom:4px;}
@@ -475,6 +547,283 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
 .mnav-btns{width:80%;display:flex;flex-direction:column;gap:10px;}
 .mnav-btn-in{display:block;text-align:center;padding:14px;background:rgba(212,175,55,.08);border:1.5px solid rgba(212,175,55,.3);color:rgba(255,255,255,.85);font-family:var(--tj);font-weight:800;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,175,55,.2);}
 .mnav-btn-reg{display:block;text-align:center;padding:14px;background:#D4AF37;color:#0C2540;font-family:var(--tj);font-weight:900;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,175,55,.2);}
+
+
+/* ══ WHY DAYEM ══ */
+/* ═══════════════════════════════
+   WHY DAYEM — Split Reveal Design
+   ═══════════════════════════════ */
+
+/* Animations */
+@keyframes wBg{0%,100%{opacity:.012}55%{opacity:.022}}
+@keyframes wPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.4)}70%{box-shadow:0 0 0 12px rgba(212,175,55,0)}}
+@keyframes wBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes wSlideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Section */
+#why{
+  background:#060F1E;
+  position:relative;
+  overflow:hidden;
+  padding:120px 0 100px;
+}
+#why::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(212,175,55,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(212,175,55,.02) 1px,transparent 1px);
+  background-size:90px 90px;
+  mask-image:radial-gradient(ellipse 60% 55% at 50% 50%,#000 20%,transparent 100%);
+  pointer-events:none;
+}
+#why::after{
+  content:'∞';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-12deg);
+  font-size:min(60vw,680px);font-weight:900;line-height:1;
+  color:#D4AF37;opacity:.013;
+  pointer-events:none;user-select:none;
+  animation:wBg 7s ease infinite;
+}
+.why-top-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.2),transparent);}
+.why-bot-line{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.2),transparent);}
+
+/* Container */
+.si{max-width:1160px;margin:0 auto;padding:0 5%;position:relative;z-index:2;}
+
+/* Header */
+.why-hd{margin-bottom:68px;}
+.why-eyb{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.why-eyb-line{height:1px;width:48px;background:linear-gradient(90deg,transparent,#D4AF37);flex-shrink:0;}
+.why-eyb-txt{font-family:var(--tj);font-size:.44rem;letter-spacing:6px;color:rgba(212,175,55,.5);text-transform:uppercase;font-weight:800;}
+.why-hd h2{font-family:var(--pf);font-size:clamp(2.6rem,5.5vw,4rem);font-weight:700;color:#fff;line-height:1.08;margin-bottom:12px;}
+.why-hd h2 em{color:#D4AF37;font-style:italic;}
+.why-hd p{font-family:var(--tj);font-size:.88rem;color:rgba(255,255,255,.28);line-height:1.85;max-width:420px;}
+
+/* ── Layout: Left = scenarios | Right = visual ── */
+.why-
+
+/* ── LEFT: Scenario list ── */
+.why-list{display:flex;flex-direction:column;}
+
+.why-item{
+  display:grid;
+  grid-template-columns:44px 1fr;
+  gap:18px;
+  padding:22px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;
+  position:relative;
+  transition:background .3s;
+}
+.why-item:first-child{border-top:1px solid rgba(255,255,255,.05);}
+.why-item:last-child{border-bottom:none;}
+
+/* Progress line */
+.why-item-bar{
+  position:absolute;bottom:0;right:0;left:0;
+  height:1px;
+  background:#D4AF37;
+  transform:scaleX(0);transform-origin:right;
+}
+.why-item.active .why-item-bar{
+  animation:wBar var(--d,4.8s) linear forwards;
+}
+
+/* Gold left accent */
+.why-item-accent{
+  position:absolute;right:0;top:0;bottom:0;width:2px;
+  background:#D4AF37;
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .5s cubic-bezier(.23,1,.32,1);
+}
+.why-item.active .why-item-accent{transform:scaleY(1);}
+
+/* Number */
+.why-num{
+  font-family:var(--pf);
+  font-size:1.6rem;font-weight:700;
+  color:rgba(212,175,55,.1);
+  line-height:1.2;text-align:center;
+  transition:color .4s,transform .4s cubic-bezier(.23,1,.32,1);
+  padding-top:3px;
+}
+.why-item.active .why-num{color:rgba(212,175,55,.6);transform:scale(1.1);}
+
+/* Content */
+.why-content{}
+.why-q{
+  font-family:var(--tj);font-size:.98rem;font-weight:900;
+  color:rgba(255,255,255,.45);
+  line-height:1.3;margin-bottom:0;
+  transition:color .35s;
+}
+.why-item.active .why-q{color:#fff;}
+.why-a{
+  font-family:var(--tj);font-size:.78rem;
+  color:rgba(255,255,255,.3);line-height:1.88;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .55s cubic-bezier(.23,1,.32,1),opacity .45s ease,margin .4s;
+  margin-top:0;
+}
+.why-item.active .why-a{max-height:80px;opacity:1;margin-top:8px;}
+
+/* Dots nav */
+.why-dots{display:flex;gap:5px;padding-top:16px;}
+.why-dot{
+  height:2px;flex:1;background:rgba(255,255,255,.07);
+  cursor:pointer;overflow:hidden;position:relative;
+  transition:background .3s;
+}
+.why-dot.active{background:rgba(212,175,55,.15);}
+.why-dot-fill{
+  position:absolute;inset:0;
+  background:#D4AF37;transform:scaleX(0);transform-origin:right;
+}
+.why-dot.active .why-dot-fill{
+  animation:wBar var(--d,4.8s) linear forwards;
+}
+
+/* ── RIGHT: Visual card ── */
+.why-visual{
+  position:sticky;top:100px;
+  display:flex;flex-direction:column;gap:0;
+}
+
+/* Active scenario display */
+.why-scenario-card{
+  background:rgba(212,175,55,.04);
+  border:1px solid rgba(212,175,55,.13);
+  padding:32px 28px;
+  position:relative;
+  overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.why-scenario-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent);
+}
+.why-corner-tr{position:absolute;top:-1px;right:-1px;width:20px;height:20px;border-top:2px solid #D4AF37;border-right:2px solid #D4AF37;}
+.why-corner-bl{position:absolute;bottom:-1px;left:-1px;width:20px;height:20px;border-bottom:2px solid #D4AF37;border-left:2px solid #D4AF37;}
+
+.why-card-label{
+  font-family:var(--tj);font-size:.48rem;letter-spacing:4px;
+  color:rgba(212,175,55,.4);text-transform:uppercase;font-weight:800;
+  margin-bottom:16px;
+}
+.why-card-num{
+  font-family:var(--pf);
+  font-size:4rem;font-weight:700;
+  color:rgba(212,175,55,.08);
+  line-height:1;
+  position:absolute;top:16px;left:20px;
+  transition:color .4s,opacity .25s;
+  user-select:none;
+}
+.why-scenario-card:hover .why-card-num{color:rgba(212,175,55,.12);}
+.why-card-title{
+  font-family:var(--pf);font-size:1.05rem;font-weight:700;
+  color:#fff;line-height:1.6;
+  position:relative;z-index:1;
+  min-height:60px;
+  transition:opacity .3s;
+}
+.why-card-tag{
+  font-family:var(--tj);font-size:.6rem;font-weight:800;
+  color:#D4AF37;letter-spacing:2px;
+  margin-top:16px;
+  display:flex;align-items:center;gap:6px;
+}
+.why-card-tag::before{content:'';flex:1;height:1px;background:rgba(212,175,55,.2);}
+
+/* Promise strip */
+.why-promise{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.055);
+  border-top:none;
+  padding:20px 28px;
+  display:flex;align-items:center;gap:12px;
+}
+.why-promise-dot{
+  width:7px;height:7px;border-radius:50%;background:#D4AF37;
+  flex-shrink:0;
+  animation:wPulse 2.8s ease infinite;
+}
+.why-promise-text{
+  font-family:var(--pf);font-size:.82rem;
+  color:rgba(255,255,255,.55);line-height:1.7;font-style:italic;
+}
+.why-promise-text strong{color:#D4AF37;font-style:normal;}
+
+.why-stats{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.05);
+  border-top:none;
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.why-stat-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;
+}
+.why-stat-n{
+  font-family:var(--pf);font-size:1.6rem;font-weight:700;
+  color:#D4AF37;line-height:1;
+}
+.why-stat-l{
+  font-family:var(--tj);font-size:.58rem;
+  color:rgba(255,255,255,.25);letter-spacing:.5px;
+  text-align:center;
+}
+.why-stat-div{
+  width:1px;height:32px;
+  background:rgba(255,255,255,.07);
+  flex-shrink:0;
+}
+.why-cta{
+  background:#D4AF37;
+  padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+  transition:background .25s,transform .2s;
+  user-select:none;
+}
+.why-cta:hover{background:#F0D060;transform:translateY(-1px);}
+.why-cta span:first-child{
+  font-family:var(--tj);font-size:.82rem;font-weight:900;
+  color:#0C2540;letter-spacing:.5px;
+}
+.why-cta-arrow{
+  font-size:1.1rem;color:#0C2540;
+  transition:transform .3s;
+}
+.why-cta:hover .why-cta-arrow{transform:translateX(-4px);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .why-
+  .why-visual{
+    position:static;top:auto;
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+  }
+  .why-scenario-card{grid-column:1/3;}
+  .why-promise{border-top:none;}
+  .why-stats{grid-column:1/2;border-right:none;}
+  .why-cta{grid-column:2/3;border-top:none;align-items:center;justify-content:center;gap:10px;}
+}
+@media(max-width:580px){
+  .why-visual{grid-template-columns:1fr;}
+  .why-scenario-card{grid-column:1;}
+  .why-stats{grid-column:1;border-right:none;border-top:none;}
+  .why-cta{grid-column:1;border-top:none;}
+  .why-item{grid-template-columns:36px 1fr;gap:12px;}
+  .why-num{font-size:1.2rem;}
+  .why-q{font-size:.9rem;}
+  #why{padding:80px 0 72px;}
+}
 </style>
 </head>
 <body>
@@ -490,7 +839,7 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
 
 <!-- NAV -->
 <nav id="nav" class="dark">
-  <a href="#" class="nl">
+  <a href="/" class="nl">
     <div class="nb"><i>∞</i></div>
     <div class="nt"><span class="n-ar">دايم</span><span class="n-en">DAYEM · Trade Without Restrictions</span></div>
   </a>
@@ -499,9 +848,11 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
       <li><a href="#sol">الحل</a></li>
       <li><a href="#wa">رحلة التاجر</a></li>
       <li><a href="#pr">الأسعار</a></li>
+      <li><a href="#why">ليه دايم؟</a></li>
       <li><a href="#inv">المستثمرون</a></li>
+      <li><a href="/discover" style="color:var(--G)!important;font-weight:800!important;">اكتشف المتاجر ↗</a></li>
     </ul>
-    <a href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/login'" class="nav-login">دخول</a><a href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'" class="nav-register">ابدأ متجرك</a>
+    <a href="javascript:void(0)" onclick="window.location.href='/login'" class="nav-login">دخول</a><a href="javascript:void(0)" onclick="window.location.href='/register'" class="nav-register">ابدأ متجرك</a>
     <button class="nham" id="ham" aria-label="القائمة"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -515,16 +866,17 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
     <h1 class="ht1">التاجر المصري<br>يستحق</h1>
     <div class="ht2">منصة تليق به ∞</div>
     <div class="hrule"></div>
-    <p class="hdesc">متجرك أونلاين كامل في <b>٥ دقايق</b> — من واتساب فقط.<br>بدون خبرة تقنية. توصيل لكل <b>٢٧ محافظة</b>.</p>
+    <p class="hdesc">متجرك أونلاين كامل في <b>٥ دقايق</b> — سجّل وارفع صورك فقط.<br>الـ AI يبني متجرك تلقائياً. توصيل لكل <b>٢٧ محافظة</b>.</p>
     <div class="hbtns">
-      <button class="btn-fill" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'"><span>ابدأ متجرك دلوقتي</span></button>
+      <button class="btn-fill" onclick="window.location.href='/register'"><span>ابدأ متجرك ← 100 ج/شهر</span></button>
       <button class="btn-ghost" onclick="document.getElementById('sol').scrollIntoView({behavior:'smooth'})">إزاي بيشتغل؟</button>
+      <a href="/discover" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;font-family:var(--tj);font-size:.73rem;font-weight:700;color:rgba(12,37,64,.6);border:1px solid rgba(12,37,64,.15);text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#A88C2A';this.style.color='#A88C2A'" onmouseout="this.style.borderColor='rgba(12,37,64,.15)';this.style.color='rgba(12,37,64,.6)'">اكتشف المتاجر ↗</a>
     </div>
     <div class="hstats">
-      <div class="hs"><span class="hsn" id="hs1">0</span><span class="hsl">تاجر نشط</span></div>
+      <div class="hs"><span class="hsn">٥٢٣+</span><span class="hsl">تاجر مسجل</span></div>
       <div class="hs"><span class="hsn">27</span><span class="hsl">محافظة</span></div>
-      <div class="hs"><span class="hsn">٥ د</span><span class="hsl">للإنشاء</span></div>
-      <div class="hs"><span class="hsn" id="hs2">0</span><span class="hsl">طلب/شهر</span></div>
+      <div class="hs"><span class="hsn">٥ دقايق</span><span class="hsl">للإنشاء</span></div>
+      <div class="hs"><span class="hsn">٤٨٩١+</span><span class="hsl">طلب مكتمل</span></div>
     </div>
   </div>
   <div class="hb">
@@ -538,9 +890,9 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
         <span class="bdb-tag">Trade Without Restrictions</span>
       </div>
       <div class="bpills">
-        <span class="bp">$2.4B سوق</span>
-        <span class="bp">38% نمو</span>
-        <span class="bp">3M+ تاجر</span>
+        <span class="bp">AI Powered 🤖</span>
+        <span class="bp">٢٧ محافظة 📍</span>
+        <span class="bp">Made in Egypt 🇪🇬</span>
       </div>
     </div>
   </div>
@@ -550,14 +902,14 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
 <!-- TICKER -->
 <div class="ticker" data-theme="dark">
   <div class="tk-t">
-    <span class="tki"><span class="tkg"></span>واتساب → متجر في ٥ دقايق</span>
+    <span class="tki"><span class="tkg"></span>سجّل ← ارفع صورك ← متجر جاهز</span>
     <span class="tki"><span class="tkg"></span>٢٧ محافظة توصيل</span>
     <span class="tki"><span class="tkg"></span>AI Catalog Generation</span>
     <span class="tki"><span class="tkg"></span>فودافون كاش · انستاباي · كارت</span>
     <span class="tki"><span class="tkg"></span>Bosta &amp; J&amp;T Integration</span>
     <span class="tki"><span class="tkg"></span>داشبورد بالعربي Real-time</span>
     <span class="tki"><span class="tkg"></span>ابدأ بـ 100 جنيه فقط</span>
-    <span class="tki"><span class="tkg"></span>واتساب → متجر في ٥ دقايق</span>
+    <span class="tki"><span class="tkg"></span>سجّل ← ارفع صورك ← متجر جاهز</span>
     <span class="tki"><span class="tkg"></span>٢٧ محافظة توصيل</span>
     <span class="tki"><span class="tkg"></span>AI Catalog Generation</span>
     <span class="tki"><span class="tkg"></span>فودافون كاش · انستاباي · كارت</span>
@@ -586,66 +938,389 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
   </div>
 </section>
 
+
+<section id="why" data-theme="dark">
+  <div class="why-top-line"></div>
+  <div class="why-bot-line"></div>
+
+  <div class="si">
+
+    <!-- Header -->
+    <div class="why-hd">
+      <div class="why-eyb">
+        <div class="why-eyb-line"></div>
+        <span class="why-eyb-txt">القصة</span>
+      </div>
+      <h2>ليه <em>دايم</em>؟</h2>
+      <p>٣+ مليون تاجر مصري بيواجه نفس التحديات — دايم اتبنى عشانهم</p>
+    </div>
+
+    <!-- Body -->
+    <div class="why-body">
+
+      <!-- Left: list -->
+      <div>
+        <div class="why-list" id="why-list">
+
+          <div class="why-item" data-i="0" onclick="wClick(0)">
+            <div class="why-item-accent"></div>
+            <div class="why-item-bar" style="--d:4.8s"></div>
+            <span class="why-num">١</span>
+            <div class="why-content">
+              <div class="why-q">مش قادر توصل لزبائن برا منطقتك</div>
+              <div class="why-a">رابط واحد بتشاركه — الزبون في أي من ٢٧ محافظة يطلب ويدفع ويستقبل توصيل على بابه. المسافة بطلت عائق.</div>
+            </div>
+          </div>
+
+          <div class="why-item" data-i="1" onclick="wClick(1)">
+            <div class="why-item-accent"></div>
+            <div class="why-item-bar" style="--d:4.8s"></div>
+            <span class="why-num">٢</span>
+            <div class="why-content">
+              <div class="why-q">بتضيّع ساعات في الرد على نفس الأسئلة</div>
+              <div class="why-a">متجرك بيجاوب نيابةً عنك — أسعار واضحة، صور احترافية، شراء بضغطة. إنت بتركّز على البيع مش على الرد.</div>
+            </div>
+          </div>
+
+          <div class="why-item" data-i="2" onclick="wClick(2)">
+            <div class="why-item-accent"></div>
+            <div class="why-item-bar" style="--d:4.8s"></div>
+            <span class="why-num">٣</span>
+            <div class="why-content">
+              <div class="why-q">الكهرباء أو الظروف وقّفت شغلك</div>
+              <div class="why-a">متجرك الأونلاين شغال ٢٤/٧ — أي انقطاع أو ظرف طارئ مش بيأثر على حضورك الرقمي. الزبون دايماً يلاقيك.</div>
+            </div>
+          </div>
+
+          <div class="why-item" data-i="3" onclick="wClick(3)">
+            <div class="why-item-accent"></div>
+            <div class="why-item-bar" style="--d:4.8s"></div>
+            <span class="why-num">٤</span>
+            <div class="why-content">
+              <div class="why-q">مش عارف تعمل متجر أونلاين بدون خبرة</div>
+              <div class="why-a">ارفع صورك — الـ AI بيكتب الأوصاف ويبني الكتالوج ويجهّز المتجر كله. بدون كود، بدون مصمم، بدون تعقيد.</div>
+            </div>
+          </div>
+
+          <div class="why-item" data-i="4" onclick="wClick(4)">
+            <div class="why-item-accent"></div>
+            <div class="why-item-bar" style="--d:4.8s"></div>
+            <span class="why-num">٥</span>
+            <div class="why-content">
+              <div class="why-q">الموسم الصعب بيأثر على مبيعاتك</div>
+              <div class="why-a">الحضور الأونلاين بيخلي مبيعاتك مستمرة طول السنة — رمضان، الصيف، أي موسم. دايم بيشتغل معاك.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dots -->
+        <div class="why-dots" id="why-dots">
+          <div class="why-dot" data-i="0" onclick="wClick(0)" style="--d:4.8s"><div class="why-dot-fill"></div></div>
+          <div class="why-dot" data-i="1" onclick="wClick(1)" style="--d:4.8s"><div class="why-dot-fill"></div></div>
+          <div class="why-dot" data-i="2" onclick="wClick(2)" style="--d:4.8s"><div class="why-dot-fill"></div></div>
+          <div class="why-dot" data-i="3" onclick="wClick(3)" style="--d:4.8s"><div class="why-dot-fill"></div></div>
+          <div class="why-dot" data-i="4" onclick="wClick(4)" style="--d:4.8s"><div class="why-dot-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- Right: visual -->
+      <div class="why-visual">
+
+        <!-- Active scenario card -->
+        <div class="why-scenario-card">
+          <div class="why-corner-tr"></div>
+          <div class="why-corner-bl"></div>
+          <div class="why-card-num" id="why-card-num">١</div>
+          <div>
+            <div class="why-card-label">التحدي الحالي</div>
+            <div class="why-card-title" id="why-card-title">مش قادر توصل لزبائن برا منطقتك</div>
+          </div>
+          <div class="why-card-tag">متجرك شغال ∞</div>
+        </div>
+
+        <!-- Promise -->
+        <div class="why-promise">
+          <div class="why-promise-dot"></div>
+          <div class="why-promise-text">
+            "طالما في تاجر مصري بيحلم —
+            <strong>دايم هيبقى معاه."</strong>
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="why-stats">
+          <div class="why-stat-item">
+            <span class="why-stat-n">٥٢٣</span>
+            <span class="why-stat-l">تاجر مسجل</span>
+          </div>
+          <div class="why-stat-div"></div>
+          <div class="why-stat-item">
+            <span class="why-stat-n">٢٧</span>
+            <span class="why-stat-l">محافظة</span>
+          </div>
+          <div class="why-stat-div"></div>
+          <div class="why-stat-item">
+            <span class="why-stat-n">٥</span>
+            <span class="why-stat-l">دقايق للإنشاء</span>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="why-cta" onclick="window.location.href='/register'">
+          <span>ابدأ متجرك دلوقتي</span>
+          <span class="why-cta-arrow">←</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+<script>
+const W_DATA = [
+  { num:'١', title:'مش قادر توصل لزبائن برا منطقتك' },
+  { num:'٢', title:'بتضيّع ساعات في الرد على نفس الأسئلة' },
+  { num:'٣', title:'الكهرباء أو الظروف وقّفت شغلك' },
+  { num:'٤', title:'مش عارف تعمل متجر أونلاين بدون خبرة' },
+  { num:'٥', title:'الموسم الصعب بيأثر على مبيعاتك' },
+]
+
+const DUR = 4800
+let cur = -1, timer = null, running = false, paused = false
+
+function wActivate(i) {
+  const items = document.querySelectorAll('.why-item')
+  const dots  = document.querySelectorAll('.why-dot')
+  if (!items[i]) return
+
+  // Reset all
+  items.forEach((el, j) => {
+    el.classList.remove('active')
+    const bar = el.querySelector('.why-item-bar')
+    const acc = el.querySelector('.why-item-accent')
+    if (bar) { bar.style.animation = 'none'; void bar.offsetWidth }
+    dots[j]?.classList.remove('active')
+    const df = dots[j]?.querySelector('.why-dot-fill')
+    if (df) { df.style.animation = 'none'; void df.offsetWidth }
+  })
+
+  // Activate
+  items[i].classList.add('active')
+  const bar = items[i].querySelector('.why-item-bar')
+  if (bar) { void bar.offsetWidth; bar.style.animation = `wBar ${DUR}ms linear forwards` }
+
+  dots[i]?.classList.add('active')
+  const df = dots[i]?.querySelector('.why-dot-fill')
+  if (df) { void df.offsetWidth; df.style.animation = `wBar ${DUR}ms linear forwards` }
+
+  // Update right panel
+  const cardNum   = document.getElementById('why-card-num')
+  const cardTitle = document.getElementById('why-card-title')
+  if(cardNum){cardNum.style.opacity='0';setTimeout(()=>{cardNum.textContent=W_DATA[i].num;cardNum.style.opacity='1'},200)}
+  if(cardTitle){cardTitle.style.opacity='0';setTimeout(()=>{cardTitle.textContent=W_DATA[i].title;cardTitle.style.opacity='1'},200)}
+
+  cur = i
+  clearInterval(timer)
+  timer = setInterval(() => { if (!paused) wActivate((cur + 1) % items.length) }, DUR)
+}
+
+function wClick(i) { wActivate(i) }
+
+// Auto-start — works on file:// and https://
+function wStart(){
+  if(running)return
+  running=true
+  wActivate(0)
+}
+// Start immediately when DOM ready
+setTimeout(wStart, 300)
+// Also use IntersectionObserver if available (for embedded in page)
+if('IntersectionObserver' in window){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){wStart();obs.disconnect()}})
+  },{threshold:0.1})
+  const el=document.getElementById('why-list')
+  if(el)obs.observe(el)
+}
+// Pause on hover
+const listEl=document.getElementById('why-list')
+if(listEl){
+  listEl.addEventListener('mouseenter',()=>{paused=true})
+  listEl.addEventListener('mouseleave',()=>{
+    paused=false
+    clearInterval(timer)
+    timer=setInterval(()=>{if(!paused)wActivate((cur+1)%document.querySelectorAll('.why-item').length)},DUR)
+  })
+}
+</script>
 <!-- SOLUTION -->
 <section class="sec sbg" id="sol" data-theme="dark">
   <div class="si">
     <div class="stop">
       <div class="rv">
         <div class="eyb"><div class="eyb-l"></div><span class="eyb-t dk">الحل</span></div>
-        <h2 class="sh dk">من واتساب<br>لمتجر <em>عالمي</em><br>في <span style="color:var(--G)">٥ دقايق</span></h2>
+        <h2 class="sh dk">سجّل وارفع<br>متجرك <em>جاهز</em><br>في <span style="color:var(--G)">٥ دقايق</span></h2>
       </div>
       <div class="rv d2" style="align-self:center;">
-        <p class="sp dk">الذكاء الاصطناعي بيحلل صور منتجاتك، بيكتب الأوصاف، وبيبني المتجر تلقائياً. التاجر بس بيبعت صور — الباقي على دايم.</p>
+        <p class="sp dk">سجّل على دايم، ارفع صور منتجاتك، والـ AI يحلل ويبني كتالوجك ومتجرك في دقايق — بدون كود، بدون تصميم، بدون خبرة.</p>
       </div>
     </div>
     <div class="flow rv d1">
       <div class="fc">
-        <div class="fci">📱</div><span class="fcn">الخطوة ١</span><div class="fct">بعت الصور</div><div class="fcd">على واتساب</div>
-        <div class="fcd-expand">بعت صور منتجاتك مع الأسعار والكميات على واتساب دايم — مش محتاج أي حاجة تانية</div>
+        <div class="fci">📝</div><span class="fcn">الخطوة ١</span><div class="fct">سجّل حسابك</div><div class="fcd">في دقيقة واحدة</div>
+        <div class="fcd-expand">سجّل على دايم، اختار خطتك واسم متجرك — مش محتاج أي خبرة تقنية</div>
       </div>
       <div class="fc">
-        <div class="fci">🤖</div><span class="fcn">الخطوة ٢</span><div class="fct">AI بيشتغل</div><div class="fcd">تلقائياً</div>
-        <div class="fcd-expand">GPT Vision بيحلل الصور ويكتب أوصاف احترافية بالعربي والإنجليزي في ثواني</div>
+        <div class="fci">📸</div><span class="fcn">الخطوة ٢</span><div class="fct">ارفع صورك</div><div class="fcd">من جهازك مباشرة</div>
+        <div class="fcd-expand">ارفع صور منتجاتك من موبايلك أو لابتوبك — بدون أي تحضير مسبق</div>
       </div>
       <div class="fc">
-        <div class="fci">🏪</div><span class="fcn">الخطوة ٣</span><div class="fct">المتجر جاهز</div><div class="fcd">في دقايق</div>
-        <div class="fcd-expand">رابط مخصص dayem.shop/اسمك جاهز للمشاركة — تصميم احترافي وكل طرق الدفع</div>
+        <div class="fci">🤖</div><span class="fcn">الخطوة ٣</span><div class="fct">AI يبني المتجر</div><div class="fcd">تلقائياً في ثواني</div>
+        <div class="fcd-expand">GPT Vision يحلل صورك، يكتب الأوصاف، ويبني كتالوجك — إنت بس تراجع وتنشر</div>
       </div>
       <div class="fc">
-        <div class="fci">📢</div><span class="fcn">الخطوة ٤</span><div class="fct">شارك وابيع</div><div class="fcd">ستوري أو بوست</div>
-        <div class="fcd-expand">شارك الرابط على فيسبوك أو تيك توك — الزبون بيضغط ويطلب مباشرة بدون تعقيد</div>
+        <div class="fci">🏪</div><span class="fcn">الخطوة ٤</span><div class="fct">متجرك شغال</div><div class="fcd">dayem.shop/اسمك</div>
+        <div class="fcd-expand">رابط مخصص جاهز — شاركه على فيسبوك وتيك توك. الزبون بيطلب ويدفع مباشرة</div>
       </div>
       <div class="fc">
         <div class="fci">💰</div><span class="fcn">الخطوة ٥</span><div class="fct">استلم فلوسك</div><div class="fcd">كاش أو أونلاين</div>
-        <div class="fcd-expand">Bosta وJ&T بتوصل في كل مصر. كاش أو فودافون كاش أو انستاباي — إنت تختار</div>
+        <div class="fcd-expand">فودافون كاش، انستاباي، كارت بنكي، أو كاش عند الاستلام — كل طرق الدفع من اليوم الأول</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHATSAPP DEMO -->
+<!-- INTERACTIVE DASHBOARD DEMO -->
 <section class="sec wabg" id="wa" data-theme="dark">
   <div class="si">
     <div class="wawrap">
+
+      <!-- Steps on the right -->
       <div class="wasts rv">
         <div class="eyb" style="margin-bottom:13px;"><div class="eyb-l"></div><span class="eyb-t dk">رحلة التاجر</span></div>
-        <h2 class="sh dk" style="margin-bottom:11px;">محادثة واحدة<br><em>تغير كل حاجة</em></h2>
-        <p class="sp dk" style="margin-bottom:28px;">بعتلنا صور منتجاتك — احنا بنعمل الباقي في دقايق.</p>
-        <div class="wst"><div class="wstic">📱</div><div><div class="wstt">بعت صور منتجاتك</div><div class="wstd">مش محتاج غير الصور مع الأسعار على واتساب دايم</div></div></div>
-        <div class="wst"><div class="wstic">🤖</div><div><div class="wstt">AI بيعمل الكتالوج</div><div class="wstd">GPT Vision بيحلل ويكتب أوصاف احترافية في ثواني</div></div></div>
-        <div class="wst"><div class="wstic">🔗</div><div><div class="wstt">متجرك برابط مخصص</div><div class="wstd">dayem.shop/اسمك — شاركه وابدأ تبيع فوراً</div></div></div>
-        <div class="wst"><div class="wstic">📊</div><div><div class="wstt">تابع كل حاجة</div><div class="wstd">طلباتك ومبيعاتك وأرباحك من موبايلك بالعربي</div></div></div>
-      </div>
-      <div class="rv d3">
-        <div class="waph" id="waph">
-          <div class="wpb"><span>9:41</span><span>📶 🔋</span></div>
-          <div class="wph2"><div class="wpav">∞</div><div><div class="wpnm">دايم — إنشاء متجرك</div><div class="wpst">● متصل الآن</div></div></div>
-          <div class="wpmsgs" id="wpmsgs">
-            <div class="wptyp" id="wptyp"><span></span><span></span><span></span></div>
-          </div>
-          <div class="wpinp"><input placeholder="اكتب رسالة..." readonly><div class="wpsnd">➤</div></div>
+        <h2 class="sh dk" style="margin-bottom:11px;">متجرك جاهز<br><em>في ٥ دقايق</em></h2>
+        <p class="sp dk" style="margin-bottom:24px;">اضغط على أي خطوة وشوف دايم من جوا.</p>
+        <div class="wst active" onclick="dmGo(0)">
+          <div class="wstic">📝</div>
+          <div><div class="wstt">سجّل وأختار خطتك</div><div class="wstd">اسم متجرك + الخطة المناسبة في دقيقة</div></div>
+        </div>
+        <div class="wst" onclick="dmGo(1)">
+          <div class="wstic">📸</div>
+          <div><div class="wstt">ارفع صور منتجاتك</div><div class="wstd">من جهازك مباشرة — الـ AI يستلم من هنا</div></div>
+        </div>
+        <div class="wst" onclick="dmGo(2)">
+          <div class="wstic">🤖</div>
+          <div><div class="wstt">الـ AI يحلل ويبني</div><div class="wstd">GPT Vision يكتب الأوصاف ويبني الكتالوج تلقائي</div></div>
+        </div>
+        <div class="wst" onclick="dmGo(3)">
+          <div class="wstic">🏪</div>
+          <div><div class="wstt">متجرك شغال فوراً</div><div class="wstd">رابط مخصص + كل طرق الدفع + داشبورد</div></div>
         </div>
       </div>
+
+      <!-- Dashboard Mockup on the left -->
+      <div class="dm-outer rv d3">
+        <div class="dm-laptop" id="dm-laptop">
+          <!-- Top bar -->
+          <div class="dm-bar">
+            <div class="dm-bar-logo">∞ دايم</div>
+            <div class="dm-bar-pg" id="dm-pg-lbl">التسجيل</div>
+            <div class="dm-bar-dots">
+              <div class="dm-bar-dot" style="background:#EF4444"></div>
+              <div class="dm-bar-dot" style="background:#F59E0B"></div>
+              <div class="dm-bar-dot" style="background:#22C55E"></div>
+            </div>
+          </div>
+          <!-- Progress -->
+          <div class="dm-progress"><div class="dm-progress-fill" id="dm-prog" style="width:25%"></div></div>
+
+          <!-- SLIDE 0: Register -->
+          <div class="dm-slide on" id="dm-s0">
+            <div class="dm-step-label">الخطوة ١ من ٤ · اختار خطتك</div>
+            <div class="dm-plans">
+              <div class="dm-plan"><div class="dm-plan-nm">ستارتر</div><div class="dm-plan-pr">100</div><div class="dm-plan-su">ج/شهر</div></div>
+              <div class="dm-plan sel"><div class="dm-plan-nm">تاجر ✦</div><div class="dm-plan-pr">199</div><div class="dm-plan-su">ج/شهر</div></div>
+              <div class="dm-plan"><div class="dm-plan-nm">برو</div><div class="dm-plan-pr">349</div><div class="dm-plan-su">ج/شهر</div></div>
+            </div>
+            <div class="dm-fields">
+              <div class="dm-field filled"><span class="dm-field-lbl">اسم المتجر</span><span class="dm-field-val">متجر أحمد للأزياء</span></div>
+              <div class="dm-field filled"><span class="dm-field-lbl">المحافظة</span><span class="dm-field-val">القاهرة</span></div>
+              <div class="dm-field filled"><span class="dm-field-lbl">رابطك</span><span class="dm-field-val">dayem.shop/ahmed</span></div>
+            </div>
+            <button class="dm-cta" onclick="dmGo(1)">التالي ← رفع الصور</button>
+          </div>
+
+          <!-- SLIDE 1: Upload -->
+          <div class="dm-slide" id="dm-s1">
+            <div class="dm-step-label">الخطوة ٢ من ٤ · ارفع صور منتجاتك</div>
+            <div class="dm-upload">
+              <div class="dm-upload-ico">📁</div>
+              <div class="dm-upload-txt">اسحب الصور هنا أو اضغط للاختيار</div>
+              <div class="dm-upload-sub">PNG, JPG — حتى 20 صورة دفعة واحدة</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px;">
+              <div style="aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">👗</div>
+              <div style="aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">👟</div>
+              <div style="aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">👜</div>
+              <div style="aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">🕶️</div>
+            </div>
+            <div style="font-size:.58rem;color:rgba(212,175,55,.5);text-align:center;margin-bottom:10px;">٤ صور محددة · جاهز للتحليل</div>
+            <button class="dm-cta" onclick="dmGo(2)">التالي ← الـ AI يشتغل</button>
+          </div>
+
+          <!-- SLIDE 2: AI Analysis -->
+          <div class="dm-slide" id="dm-s2">
+            <div class="dm-step-label">الخطوة ٣ من ٤ · الذكاء الاصطناعي</div>
+            <div class="dm-ai-status">
+              <div class="dm-ai-hd">
+                <div class="dm-ai-ico">🤖</div>
+                <div><div class="dm-ai-title">GPT Vision — بيحلل صورك</div><div class="dm-ai-msg" id="dm-ai-msg">جاري تحليل الصور...</div></div>
+              </div>
+              <div class="dm-prog-bar"><div class="dm-prog-fill" id="dm-ai-fill"></div></div>
+            </div>
+            <div class="dm-prods-mini" id="dm-prods-mini">
+              <div class="dm-prod-mini" id="dmp0"><div class="dm-prod-mini-img">👗</div><div class="dm-prod-mini-info"><div class="dm-prod-mini-name">فستان صيفي</div><div class="dm-prod-mini-price">٣٥٠ج</div><span class="dm-prod-mini-badge">AI ✓</span></div></div>
+              <div class="dm-prod-mini" id="dmp1"><div class="dm-prod-mini-img">👟</div><div class="dm-prod-mini-info"><div class="dm-prod-mini-name">حذاء رياضي</div><div class="dm-prod-mini-price">٥٩٠ج</div><span class="dm-prod-mini-badge">AI ✓</span></div></div>
+              <div class="dm-prod-mini" id="dmp2"><div class="dm-prod-mini-img">👜</div><div class="dm-prod-mini-info"><div class="dm-prod-mini-name">شنطة جلد</div><div class="dm-prod-mini-price">٨٢٠ج</div><span class="dm-prod-mini-badge">AI ✓</span></div></div>
+              <div class="dm-prod-mini" id="dmp3"><div class="dm-prod-mini-img">🕶️</div><div class="dm-prod-mini-info"><div class="dm-prod-mini-name">نظارة شمس</div><div class="dm-prod-mini-price">٢٤٠ج</div><span class="dm-prod-mini-badge">AI ✓</span></div></div>
+            </div>
+            <button class="dm-cta" style="margin-top:10px;" onclick="dmGo(3)">التالي ← المتجر جاهز</button>
+          </div>
+
+          <!-- SLIDE 3: Store + Analytics -->
+          <div class="dm-slide" id="dm-s3">
+            <div class="dm-step-label">الخطوة ٤ من ٤ · متجرك شغال</div>
+            <div class="dm-store-hd">
+              <div class="dm-store-av">أ</div>
+              <div class="dm-store-info">
+                <div class="dm-store-name">متجر أحمد للأزياء</div>
+                <div class="dm-store-url">🔗 dayem.shop/ahmed</div>
+              </div>
+              <div class="dm-live-badge">● LIVE</div>
+            </div>
+            <div class="dm-stats-row">
+              <div class="dm-stat-box"><span class="dm-stat-n">12</span><span class="dm-stat-l">طلب اليوم</span></div>
+              <div class="dm-stat-box"><span class="dm-stat-n">4,200</span><span class="dm-stat-l">مبيعات ج</span></div>
+              <div class="dm-stat-box"><span class="dm-stat-n">27</span><span class="dm-stat-l">محافظة</span></div>
+            </div>
+            <div class="dm-orders-list">
+              <div class="dm-order-row"><div class="dm-order-l"><div class="dm-order-name">محمد علي · القاهرة</div><div class="dm-order-sub">فستان + حذاء · ٩٤٠ج</div></div><div class="dm-badge-new">جديد 🔔</div></div>
+              <div class="dm-order-row"><div class="dm-order-l"><div class="dm-order-name">سارة أحمد · الإسكندرية</div><div class="dm-order-sub">شنطة جلد · ٨٢٠ج</div></div><div class="dm-badge-done">تم ✓</div></div>
+              <div class="dm-order-row"><div class="dm-order-l"><div class="dm-order-name">خالد محمود · الجيزة</div><div class="dm-order-sub">نظارة · ٢٤٠ج</div></div><div class="dm-badge-new">جديد 🔔</div></div>
+            </div>
+          </div>
+
+          <!-- Nav dots -->
+          <div class="dm-dots">
+            <div class="dm-dot on" onclick="dmGo(0)"></div>
+            <div class="dm-dot" onclick="dmGo(1)"></div>
+            <div class="dm-dot" onclick="dmGo(2)"></div>
+            <div class="dm-dot" onclick="dmGo(3)"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -655,10 +1330,10 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
   <div class="si">
     <div class="nuh rv">الأرقام بتتكلم لوحدها</div>
     <div class="nugrid rv d1">
-      <div class="ng"><span class="ngn" id="n1">0</span><span class="ngl">تاجر نشط</span></div>
-      <div class="ng"><span class="ngn" id="n2">0</span><span class="ngl">طلب شهرياً</span></div>
+      <div class="ng"><span class="ngn" id="n1" data-target="523">0</span><span class="ngl">تاجر مسجل</span></div>
+      <div class="ng"><span class="ngn" id="n2" data-target="4891">0</span><span class="ngl">طلب اكتمل</span></div>
       <div class="ng"><span class="ngn">27</span><span class="ngl">محافظة توصيل</span></div>
-      <div class="ng"><span class="ngn" id="n3">0%</span><span class="ngl">نمو سنوي للسوق</span></div>
+      <div class="ng"><span class="ngn" id="n3" data-target="38">0%</span><span class="ngl">نمو سنوي للسوق</span></div>
     </div>
   </div>
 </section>
@@ -675,7 +1350,7 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
       <div class="fg" data-n="02"><span class="fgic">🚚</span><div class="fgt">شحن مدمج وأسعار مخفضة</div><div class="fgd">Bosta وJ&T بأسعار خاصة. أرخص بـ ٣٠٪ من السعر العادي لكل محافظات مصر.</div><span class="fgb">Bosta + J&T</span></div>
       <div class="fg" data-n="03"><span class="fgic">💳</span><div class="fgt">كل طرق الدفع المصرية</div><div class="fgd">كاش عند الاستلام، فودافون كاش، انستاباي، وكارت بنكي عبر Fawry. من اليوم الأول.</div><span class="fgb">Fawry + InstaPay</span></div>
       <div class="fg" data-n="04"><span class="fgic">📊</span><div class="fgt">داشبورد ذكي بالعربي</div><div class="fgd">مبيعاتك وطلباتك وأرباحك في لحظة. تقارير تفصيلية Real-time من موبايلك.</div><span class="fgb">Real-time Analytics</span></div>
-      <div class="fg" data-n="05"><span class="fgic">🔔</span><div class="fgt">إشعارات فورية</div><div class="fgd">كل طلب جديد بيوصلك فوراً على واتساب والموبايل. مش هيفوتك أوردر.</div><span class="fgb">Socket.IO</span></div>
+      <div class="fg" data-n="05"><span class="fgic">🔔</span><div class="fgt">إشعارات فورية</div><div class="fgd">كل طلب جديد بيوصلك إشعار فوري على الموبايل والداشبورد. تليجرام متاح كمان للتاجر. مش هيفوتك أوردر.</div><span class="fgb">Telegram + Push</span></div>
     </div>
   </div>
 </section>
@@ -685,7 +1360,7 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
   <div class="si">
     <div class="rv">
       <div class="eyb"><div class="eyb-l"></div><span class="eyb-t dk">الأسعار</span></div>
-      <h2 class="sh dk">ابدأ بـ <em>100 جنيه</em><br>ادفع لما تكسب</h2>
+      <h2 class="sh dk">ابدأ بـ <em>100 جنيه</em><br>كل حاجة من اليوم الأول</h2>
       <p class="sp dk">مفيش رسوم خفية. مفيش عقود. إلغاء في أي وقت.</p>
     </div>
     <div class="prgrid rv d1">
@@ -695,11 +1370,11 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
         <div class="prcdesc">للتاجر اللي بادئ</div>
         <div class="prcdiv"></div>
         <div class="prcf">متجر أونلاين كامل</div>
-        <div class="prcf">حتى ٥٠ منتج</div>
-        <div class="prcf">رابط مخصص</div>
-        <div class="prcf">كل طرق الدفع</div>
-        <div class="prcf">واتساب دعم</div>
-        <button class="prcbtn ol" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">ابدأ دلوقتي</button>
+        <div class="prcf">حتى ٥ منتجات</div>
+        <div class="prcf">رابط مخصص dayem.shop</div>
+        <div class="prcf">فودافون كاش + كارت</div>
+        <div class="prcf">دعم فني متاح</div>
+        <button class="prcbtn ol" onclick="window.location.href='/register'">اشترك ← 100 ج</button>
       </div>
       <div class="prc hot">
         <div class="prcbadge">الأشهر ✦</div>
@@ -707,25 +1382,25 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
         <div class="prcprice">199<sub> ج/شهر</sub></div>
         <div class="prcdesc">للتاجر الجاد</div>
         <div class="prcdiv"></div>
-        <div class="prcf">منتجات غير محدودة</div>
+        <div class="prcf">حتى ٢٠ منتج</div>
         <div class="prcf">تقارير مبيعات كاملة</div>
-        <div class="prcf">شحن مخفض ٣٠٪</div>
-        <div class="prcf">دعم أولوية ٢٤/٧</div>
         <div class="prcf">كوبونات وخصومات</div>
-        <div class="prcf">إشعارات واتساب</div>
-        <button class="prcbtn fl" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">اشترك الآن</button>
+        <div class="prcf">دعم أولوية</div>
+        <div class="prcf">AI كتالوج تلقائي</div>
+        <div class="prcf">إشعارات فورية</div>
+        <button class="prcbtn fl" onclick="window.location.href='/register'">اشترك ← 199 ج</button>
       </div>
       <div class="prc">
         <div class="prcname">برو</div>
         <div class="prcprice">349<sub> ج/شهر</sub></div>
         <div class="prcdesc">للتاجر المحترف</div>
         <div class="prcdiv"></div>
-        <div class="prcf">كل مميزات تاجر</div>
+        <div class="prcf">منتجات غير محدودة</div>
         <div class="prcf">متاجر متعددة</div>
-        <div class="prcf">API Integration</div>
         <div class="prcf">تحليلات متقدمة</div>
+        <div class="prcf">API Integration</div>
         <div class="prcf">مدير حساب مخصص</div>
-        <button class="prcbtn ol" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">تواصل معنا</button>
+        <button class="prcbtn ol" onclick="window.location.href='/register'">اشترك ← 349 ج</button>
       </div>
     </div>
   </div>
@@ -749,10 +1424,10 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
       <div class="rv d2">
         <div class="rm-title"><div class="rm-title-l"></div><span class="rm-title-t">خارطة الطريق</span></div>
         <div class="rm">
-          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q2 2025</span><div class="rmit">Proof of Concept</div><div class="rmib">٥٠ تاجر في منطقة واحدة — إثبات الطلب الحقيقي وتحسين المنتج</div></div>
-          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q4 2025</span><div class="rmit">بناء المنصة الكاملة</div><div class="rmib">AI + شحن مدمج + كل طرق الدفع + Automation كامل</div></div>
-          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q2 2026</span><div class="rmit">التوسع الوطني</div><div class="rmib">٥,٠٠٠ تاجر + شراكات استراتيجية مع الغرف التجارية</div></div>
-          <div class="rmi"><div class="rmid"></div><span class="rmiq">2027</span><div class="rmit">التوسع الإقليمي</div><div class="rmib">ليبيا والسودان — ١٠٠,٠٠٠ تاجر في المنطقة</div></div>
+          <div class="rmi done"><div class="rmid"></div><span class="rmiq">Q1 2026 ✓</span><div class="rmit">إطلاق المنصة</div><div class="rmib">AI + شحن مدمج + كل طرق الدفع + داشبورد عربي — المنصة شغالة</div></div>
+          <div class="rmi active"><div class="rmid"></div><span class="rmiq">Q2 2026 ← الآن</span><div class="rmit">نمو قاعدة التجار</div><div class="rmib">٥٠٠ تاجر أول + شراكات مع الغرف التجارية في القاهرة والجيزة</div></div>
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">Q4 2026</span><div class="rmit">التوسع الوطني</div><div class="rmib">٥,٠٠٠ تاجر في كل ٢٧ محافظة + تكامل مع Bosta و J&T</div></div>
+          <div class="rmi"><div class="rmid"></div><span class="rmiq">2027</span><div class="rmit">التوسع الإقليمي</div><div class="rmib">ليبيا والسودان — ١٠٠,٠٠٠ تاجر في المنطقة العربية</div></div>
         </div>
       </div>
     </div>
@@ -766,7 +1441,7 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
   <h2 class="ctah">جاهز تبقى جزء<br>من <em>المستقبل؟</em></h2>
   <p class="ctap">سواء كنت تاجر أو مستثمر — دايم هنا</p>
   <div class="ctabtns">
-    <button class="btng" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register'">ابدأ متجرك دلوقتي</button>
+    <button class="btng" onclick="window.location.href='/register'">ابدأ متجرك ← 100 ج/شهر</button>
     <button class="btno" onclick="window.open('https://wa.me/201027360268?text=أريد عرض استثماري عن دايم','_blank')">عرض للمستثمرين</button>
   </div>
   <div class="ctacs">
@@ -778,19 +1453,24 @@ footer p{font-size:.55rem;color:rgba(255,255,255,.16);letter-spacing:1px;}
 
 <footer data-theme="dark">
   <div class="fbrand"><span class="finf">∞</span><span class="fname">DAYEM</span></div>
-  <p>© 2025 دايم — كل الحقوق محفوظة</p>
+  <p>© 2026 دايم — كل الحقوق محفوظة</p>
   <span class="ftag">Trade Without Restrictions</span>
 </footer>
 
 <script>
 /* ── CURSOR ── */
 const C=document.getElementById('cur'),CR=document.getElementById('cr')
-let mx=-100,my=-100,rx=-100,ry=-100
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true})
+let mx=-500,my=-500,rx=-500,ry=-500,curActive=false
+document.addEventListener('mousemove',e=>{
+  if(!curActive){curActive=true;if(C)C.style.opacity='1';if(CR)CR.style.opacity='1';}
+  mx=e.clientX;my=e.clientY;
+},{passive:true})
 ;(function L(){
-  C.style.left=(mx-4)+'px';C.style.top=(my-4)+'px'
-  rx+=(mx-rx)*.1;ry+=(my-ry)*.1
-  CR.style.left=(rx-17)+'px';CR.style.top=(ry-17)+'px'
+  if(curActive){
+    C.style.left=(mx-4)+'px';C.style.top=(my-4)+'px'
+    rx+=(mx-rx)*.1;ry+=(my-ry)*.1
+    CR.style.left=(rx-17)+'px';CR.style.top=(ry-17)+'px'
+  }
   requestAnimationFrame(L)
 })()
 document.querySelectorAll('button,a,.pc,.fc,.fg,.inn,.prc,.ng,.wst').forEach(el=>{
@@ -808,9 +1488,8 @@ function updateNav(){
     const t=sec.offsetTop,h=sec.offsetHeight
     if(y>=t&&y<t+h) theme=sec.dataset.theme
   })
-  const scrolled=scrollY>60
-  navEl.classList.toggle('dark', scrolled || theme==='dark')
-  navEl.classList.toggle('light', !scrolled && (theme==='light'||theme==='split'))
+  navEl.classList.remove('light')
+  navEl.classList.add('dark')
 }
 window.addEventListener('scroll',()=>{
   updateNav()
@@ -897,13 +1576,77 @@ async function runWA(){
   waRunning=false
 }
 
-// Play on hover — replay every time mouse enters
-const waPhEl=document.getElementById('waph')
-if(waPhEl){
-  waPhEl.addEventListener('mouseenter',()=>runWA())
-  // Also play once when scrolled into view
-  const wo=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){runWA();wo.unobserve(e.target)}})},{threshold:.4})
-  wo.observe(waPhEl)
+/* ── INTERACTIVE DASHBOARD DEMO ── */
+const dmLabels=['التسجيل','رفع الصور','الذكاء الاصطناعي','المتجر شغال']
+const dmProgs=['25%','50%','75%','100%']
+let dmCur=0,dmTimer=null,dmStarted=false
+
+function dmGo(idx){
+  // slides
+  document.querySelectorAll('.dm-slide').forEach(s=>s.classList.remove('on'))
+  const sl=document.getElementById('dm-s'+idx)
+  if(sl)sl.classList.add('on')
+  // dots
+  document.querySelectorAll('.dm-dot').forEach((d,i)=>d.classList.toggle('on',i===idx))
+  // steps
+  document.querySelectorAll('.wst').forEach((s,i)=>s.classList.toggle('active',i===idx))
+  // progress bar
+  const pg=document.getElementById('dm-prog')
+  if(pg)pg.style.width=dmProgs[idx]
+  // label
+  const lb=document.getElementById('dm-pg-lbl')
+  if(lb)lb.textContent=dmLabels[idx]
+  dmCur=idx
+  // AI animation on slide 2
+  if(idx===2){
+    const fill=document.getElementById('dm-ai-fill')
+    const msg=document.getElementById('dm-ai-msg')
+    const prods=document.querySelectorAll('.dm-prod-mini')
+    prods.forEach(p=>p.classList.remove('show'))
+    if(fill){fill.style.transition='none';fill.style.width='0';
+      setTimeout(()=>{fill.style.transition='width 2.5s ease';fill.style.width='100%'},60)}
+    const msgs=['جاري تحليل الصور...','كتابة الأوصاف بالعربي...','ضبط الأسعار...','✅ ٤ منتجات جاهزة!']
+    msgs.forEach((m,i)=>{setTimeout(()=>{if(msg)msg.textContent=m},i*650)})
+    prods.forEach((p,i)=>{setTimeout(()=>p.classList.add('show'),(i*320)+300)})
+  }
+  // restart auto-advance
+  clearInterval(dmTimer)
+  dmTimer=setInterval(()=>dmGo((dmCur+1)%4),4200)
+}
+
+function dmStart(){
+  if(dmStarted)return
+  dmStarted=true
+  dmGo(0)
+}
+
+// ① Auto-play when scrolled into view
+const dmEl=document.getElementById('dm-laptop')
+if(dmEl){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){dmStart();obs.disconnect()}})
+  },{threshold:0.25})
+  obs.observe(dmEl)
+
+  // ② Restart from slide 0 on hover
+  dmEl.addEventListener('mouseenter',()=>{
+    clearInterval(dmTimer)
+    dmGo(0)
+  })
+  // ③ Resume auto-advance on mouse leave
+  dmEl.addEventListener('mouseleave',()=>{
+    clearInterval(dmTimer)
+    dmTimer=setInterval(()=>dmGo((dmCur+1)%4),4200)
+  })
+}
+
+// ④ Also trigger on section scroll (fallback)
+const waSection=document.getElementById('wa')
+if(waSection){
+  const obs2=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){dmStart();obs2.disconnect()}})
+  },{threshold:0.1})
+  obs2.observe(waSection)
 }
 </script>
 
@@ -919,11 +1662,13 @@ if(waPhEl){
       <li><a href="#sol" onclick="cm()">الحل</a></li>
       <li><a href="#wa" onclick="cm()">رحلة التاجر</a></li>
       <li><a href="#pr" onclick="cm()">الأسعار</a></li>
+      <li><a href="#why" onclick="cm()">ليه دايم؟</a></li>
       <li><a href="#inv" onclick="cm()">المستثمرون</a></li>
+      <li><a href="/discover" onclick="cm()" style="color:#D4AF37!important;">اكتشف المتاجر ↗</a></li>
     </ul>
     <div class="mnav-btns">
-      <a class="mnav-btn-in" href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/login';cm();">دخول</a>
-      <a class="mnav-btn-reg" href="javascript:void(0)" onclick="window.location.href=window.location.protocol+'//'+window.location.hostname+':5173/register';cm();">ابدأ متجرك مجاناً ✦</a>
+      <a class="mnav-btn-in" href="javascript:void(0)" onclick="window.location.href='/login';cm();">دخول</a>
+      <a class="mnav-btn-reg" href="javascript:void(0)" onclick="window.location.href='/register';cm();">ابدأ متجرك ✦ من 100 ج</a>
     </div>
   </div>
 </div>
