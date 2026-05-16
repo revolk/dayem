@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /discover
+Allow: /store/
+
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /customer/dashboard
+Disallow: /api/
+
+Sitemap: https://dayem.shop/sitemap.xml
