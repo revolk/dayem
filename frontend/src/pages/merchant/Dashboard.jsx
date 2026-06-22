@@ -29,7 +29,7 @@ export default function Dashboard() {
   const nav = useNavigate()
   const w = useWindowWidth()
   const isMobile = w < 1024
-  const [stats, setStats] = useState({ products: 0, orders: 0, revenue: 0, newOrders: 0 })
+  const [stats, setStats] = useState({ totalProducts: 0, totalOrders: 0, totalRevenue: 0, newOrders: 0 })
   const [orders, setOrders] = useState([])
   const [merchant, setMerchant] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -117,9 +117,9 @@ export default function Dashboard() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: isMobile ? 10 : 16, marginBottom: isMobile ? 16 : 24 }}>
           {[
-            { label: 'المنتجات', value: stats.products, sub: 'في متجرك', color: '#60A5FA', symbol: '◈' },
-            { label: 'الطلبات', value: stats.orders, sub: 'إجمالي', color: '#A78BFA', symbol: '◉' },
-            { label: 'الإيرادات', value: stats.revenue?.toLocaleString(), sub: 'جنيه', color: '#D4AF37', symbol: '◆', suffix: ' ج' },
+            { label: 'المنتجات', value: stats.totalProducts, sub: 'في متجرك', color: '#60A5FA', symbol: '◈' },
+            { label: 'الطلبات', value: stats.totalOrders, sub: 'إجمالي', color: '#A78BFA', symbol: '◉' },
+            { label: 'الإيرادات', value: stats.totalRevenue?.toLocaleString(), sub: 'جنيه', color: '#D4AF37', symbol: '◆', suffix: ' ج' },
             { label: 'جديد', value: stats.newOrders, sub: 'طلب جديد', color: stats.newOrders > 0 ? '#F87171' : '#6B7280', symbol: '◎' },
           ].map((s, i) => (
             <div key={i} style={{ background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.055)', padding: isMobile ? '16px 14px' : '22px 20px', position: 'relative', overflow: 'hidden' }}>

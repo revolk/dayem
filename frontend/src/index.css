@@ -1,17 +1,147 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
 
-:root {
-  --navy:  #113459;
-  --navy2: #0C2540;
-  --gold:  #D4AF37;
-  --gold2: #F0D060;
-  --beige: #F4EDE0;
-  --white: #FFFFFF;
+/* ══════════════════════════════════════
+   DARK THEME (default)
+══════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  --c-bg:        #060F1E;
+  --c-bg2:       #0A1628;
+  --c-bg3:       #0D1E35;
+  --c-bg4:       #112340;
+
+  --c-gold:      #D4AF37;
+  --c-gold2:     #E8CC7A;
+  --c-gold3:     #8B6914;
+  --c-gold-a1:   rgba(212,175,55,.07);
+  --c-gold-a2:   rgba(212,175,55,.15);
+  --c-gold-a3:   rgba(212,175,55,.3);
+
+  --c-text:      #EDE8DD;
+  --c-text2:     rgba(237,232,221,.6);
+  --c-text3:     rgba(237,232,221,.3);
+  --c-muted:     #7A8FA8;
+  --c-dim:       #2E3D52;
+
+  --c-border:    rgba(212,175,55,.1);
+  --c-border2:   rgba(255,255,255,.06);
+
+  --c-green:     #2DD4AA;
+  --c-red:       #F45B7A;
+  --c-blue:      #4B9CF5;
+  --c-purple:    #9D7FEA;
+
+  --c-input-bg:  rgba(255,255,255,.04);
+  --c-card:      rgba(255,255,255,.025);
+
+  --shadow-gold: 0 8px 32px rgba(212,175,55,.15);
+  --shadow-card: 0 4px 24px rgba(0,0,0,.4);
+
+  color-scheme: dark;
 }
 
+/* ══════════════════════════════════════
+   LIGHT THEME
+══════════════════════════════════════ */
+[data-theme="light"] {
+  --c-bg:        #F7F3EC;
+  --c-bg2:       #EEE8DC;
+  --c-bg3:       #FFFFFF;
+  --c-bg4:       #E8E0D0;
+
+  --c-gold:      #9A7B1A;
+  --c-gold2:     #7A5E0D;
+  --c-gold3:     #C9A84C;
+  --c-gold-a1:   rgba(154,123,26,.07);
+  --c-gold-a2:   rgba(154,123,26,.15);
+  --c-gold-a3:   rgba(154,123,26,.3);
+
+  --c-text:      #0C2540;
+  --c-text2:     rgba(12,37,64,.65);
+  --c-text3:     rgba(12,37,64,.35);
+  --c-muted:     #5A7090;
+  --c-dim:       #A0B0C0;
+
+  --c-border:    rgba(12,37,64,.1);
+  --c-border2:   rgba(12,37,64,.07);
+
+  --c-green:     #0E9E7E;
+  --c-red:       #D63355;
+  --c-blue:      #2074D4;
+  --c-purple:    #6B4EC8;
+
+  --c-input-bg:  rgba(12,37,64,.04);
+  --c-card:      rgba(12,37,64,.03);
+
+  --shadow-gold: 0 8px 32px rgba(154,123,26,.12);
+  --shadow-card: 0 4px 24px rgba(12,37,64,.1);
+
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════
+   BASE
+══════════════════════════════════════ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; }
-body { font-family: 'Tajawal', sans-serif; background: #FAF7F2; color: #0C2540; direction: rtl; }
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--beige); }
-::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 2px; }
+
+html {
+  font-size: 16px;
+  /* Prevent flash on load */
+  background: var(--c-bg);
+}
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  direction: rtl;
+  transition: background .3s, color .3s;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--c-gold-a3);
+  border-radius: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--c-gold-a2);
+  color: var(--c-text);
+}
+
+/* Links */
+a { color: var(--c-gold); transition: opacity .2s; }
+a:hover { opacity: .75; }
+
+/* Prevent FOUC — inject theme immediately */
+html { background: #060F1E; }
+[data-theme="light"] { background: #F7F3EC; }
+
+
+/* ══════════════════════════════════════════════════════
+   STORE ISOLATION — يمنع أي CSS من الداشبورد
+   يأثر على صفحات المتجر
+══════════════════════════════════════════════════════ */
+
+/* Reset html/body when store is mounted */
+html:has(#root .dx),
+html:has(#root .dx) body {
+  background: #F5F5F5 !important;
+  color: #111111 !important;
+  font-family: 'Cairo', sans-serif !important;
+  direction: rtl !important;
+}
+
+/* Remove dark theme vars completely when in store */
+html:has(#root .dx),
+html:has(#root .dx)[data-theme="dark"],
+html:has(#root .dx)[data-theme="light"] {
+  --c-bg: transparent !important;
+  --c-text: #111111 !important;
+  --c-bg2: #F4F4F4 !important;
+  --c-bg3: #FFFFFF !important;
+}

@@ -1,3 +1,4 @@
+// frontend/src/pages/merchant/Settings.jsx
 import { useState, useEffect, useRef } from 'react'
 import { merchantAPI, BASE } from '../../services/api'
 import Sidebar from '../../components/Sidebar'
@@ -65,11 +66,96 @@ const GOVS=['القاهرة','الجيزة','الإسكندرية','الدقهل
 const CATS=['ملابس وأزياء','إلكترونيات','أغذية ومشروبات','مستلزمات منزلية','مستحضرات تجميل','رياضة ولياقة','كتب وتعليم','هدايا وتذكارات','أخرى']
 const PLAN_L={starter:'ستارتر — ٥ منتجات',tajer:'تاجر — ٢٠ منتج',merchant:'تاجر — ٢٠ منتج',pro:'برو — غير محدود'}
 
+/* ─── Theme Picker v5 ───────────────────────────────── */
+const THEME_COLORS = [
+  // ── داكنة
+  { key:'midnight', nameAr:'منتصف الليل', hex:'#1A1A2E', dark:true  },
+  { key:'obsidian', nameAr:'أوبسيديان',   hex:'#111111', dark:true  },
+  { key:'crimson',  nameAr:'القرمزي',     hex:'#DC2626', dark:true  },
+  { key:'rose',     nameAr:'الوردي',      hex:'#BE185D', dark:true  },
+  { key:'royal',    nameAr:'الملكي',      hex:'#7C3AED', dark:true  },
+  { key:'ocean',    nameAr:'المحيط',      hex:'#0891B2', dark:true  },
+  { key:'forest',   nameAr:'الغابة',      hex:'#047857', dark:true  },
+  { key:'desert',   nameAr:'الصحراء',     hex:'#C2410C', dark:true  },
+  // ── فاتحة
+  { key:'sky',      nameAr:'السماء',      hex:'#38BDF8', dark:false },
+  { key:'mint',     nameAr:'النعناع',     hex:'#34D399', dark:false },
+  { key:'blush',    nameAr:'الوردي الفاتح',hex:'#F9A8D4',dark:false },
+  { key:'lemon',    nameAr:'الليمون',     hex:'#FDE047', dark:false },
+  { key:'lavender', nameAr:'اللافندر',    hex:'#C4B5FD', dark:false },
+  { key:'peach',    nameAr:'الخوخ',       hex:'#FED7AA', dark:false },
+]
+
+function ThemePicker({ selected, onSelect }) {
+  const dark  = THEME_COLORS.filter(t => t.dark)
+  const light = THEME_COLORS.filter(t => !t.dark)
+
+  const DotRow = ({ items }) => (
+    <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+      {items.map(t => {
+        const isActive = selected === t.key
+        return (
+          <div key={t.key} onClick={() => onSelect(t.key)}
+            title={t.nameAr}
+            style={{
+              display:'flex',flexDirection:'column',alignItems:'center',gap:5,
+              cursor:'pointer',
+            }}>
+            <div style={{
+              width:36,height:36,borderRadius:'50%',
+              background:t.hex,
+              border: isActive ? `3px solid ${G}` : '3px solid transparent',
+              boxShadow: isActive ? `0 0 0 2px rgba(212,175,55,.5)` : '0 2px 8px rgba(0,0,0,.3)',
+              transition:'all .2s',
+              transform: isActive ? 'scale(1.15)' : 'scale(1)',
+            }}/>
+            <div style={{fontSize:'.56rem',color:isActive?G:'rgba(255,255,255,.4)',fontWeight:isActive?700:400,whiteSpace:'nowrap'}}>
+              {t.nameAr}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{marginBottom:20,padding:'12px 14px',background:'rgba(212,175,55,.04)',border:'1px solid rgba(212,175,55,.1)',fontSize:'.72rem',color:'rgba(255,255,255,.35)',lineHeight:1.7}}>
+        🎨 اختار لون هوية متجرك — هيطبق على الهيدر والفوتر والأزرار تلقائياً
+      </div>
+
+      <div style={{marginBottom:8,fontSize:'.66rem',color:'rgba(255,255,255,.35)',letterSpacing:2,textTransform:'uppercase'}}>ألوان داكنة</div>
+      <DotRow items={dark}/>
+
+      <div style={{marginTop:20,marginBottom:8,fontSize:'.66rem',color:'rgba(255,255,255,.35)',letterSpacing:2,textTransform:'uppercase'}}>ألوان فاتحة</div>
+      <DotRow items={light}/>
+
+      {selected && (
+        <div style={{marginTop:16,display:'flex',alignItems:'center',gap:10}}>
+          <div style={{
+            width:20,height:20,borderRadius:'50%',
+            background: THEME_COLORS.find(t=>t.key===selected)?.hex||'#111',
+            border:'2px solid rgba(255,255,255,.2)',
+          }}/>
+          <span style={{fontSize:'.72rem',color:G}}>
+            اللون المختار: {THEME_COLORS.find(t=>t.key===selected)?.nameAr}
+          </span>
+        </div>
+      )}
+
+      <div style={{marginTop:16,padding:'10px 14px',background:'rgba(212,175,55,.04)',border:'1px solid rgba(212,175,55,.1)',fontSize:'.72rem',color:'rgba(255,255,255,.35)',display:'flex',alignItems:'center',gap:8}}>
+        <span>👁</span>
+        <span>اضغط "حفظ التغييرات" عشان العملاء يشوفوا اللون الجديد</span>
+      </div>
+    </div>
+  )
+}
+
 export default function Settings() {
   const w = useW()
   const mob = w < 1024
   const [merchant,setMerchant]   = useState(null)
-  const [form,setForm]           = useState({name:'',description:'',phone:'',address:'',category:'',governorate:'',vodafoneCash:'',instapay:'',fawryCode:''})
+  const [form,setForm]           = useState({name:'',description:'',phone:'',address:'',category:'',governorate:'',vodafoneCash:'',instapay:'',fawryCode:'',theme:'midnight'})
   const [logoPreview,setLogo]    = useState(null)
   const [saving,setSaving]       = useState(false)
   const [uploading,setUploading] = useState(false)
@@ -90,7 +176,9 @@ export default function Settings() {
       name:m?.store?.name||'',description:m?.store?.description||'',
       phone:m?.store?.phone||m?.phone||'',address:m?.store?.address||'',
       category:m?.store?.category||'',governorate:m?.store?.governorate||'',
-      vodafoneCash:m?.store?.vodafoneCash||'',instapay:m?.store?.instapay||'',fawryCode:m?.store?.fawryCode||''
+      vodafoneCash:m?.store?.vodafoneCash||'',instapay:m?.store?.instapay||'',
+      fawryCode:m?.store?.fawryCode||'',
+      theme:m?.store?.theme||'midnight'
     })
     setLogo(m?.store?.logo||null)
     fetch(`${BASE}/merchant/telegram`,{headers:authHeaders()}).then(r=>r.json()).then(res=>{
@@ -140,7 +228,12 @@ export default function Settings() {
 
   const storeUrl=`${window.location.origin}/store/${merchant?.store?.slug}`
   const selStyle={width:'100%',padding:'11px 14px',background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.07)',fontFamily:'Tajawal',fontSize:'.88rem',color:'#fff',outline:'none',cursor:'pointer',boxSizing:'border-box'}
-  const TABS=[{id:'store',label:'المتجر',icon:'🏪'},{id:'payment',label:'الدفع',icon:'💳'},{id:'notifications',label:'الإشعارات',icon:'🔔'}]
+  const TABS=[
+    {id:'store',label:'المتجر',icon:'🏪'},
+    {id:'theme',label:'المظهر',icon:'🎨'},
+    {id:'payment',label:'الدفع',icon:'💳'},
+    {id:'notifications',label:'الإشعارات',icon:'🔔'}
+  ]
 
   return (
     <div style={{minHeight:'100vh',background:'#060F1E',fontFamily:'Tajawal',direction:'rtl'}}>
@@ -157,11 +250,11 @@ export default function Settings() {
           </div>
 
           {/* Tabs */}
-          <div style={{display:'flex',gap:2,marginBottom:24,background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',padding:4}}>
+          <div style={{display:'flex',gap:2,marginBottom:24,background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',padding:4,flexWrap:'wrap'}}>
             {TABS.map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)} style={{
                 flex:1,padding:mob?'9px 8px':'10px 16px',border:'none',fontFamily:'Tajawal',fontSize:mob?'.72rem':'.78rem',fontWeight:700,cursor:'pointer',transition:'all .2s',
-                display:'flex',alignItems:'center',justifyContent:'center',gap:6,
+                display:'flex',alignItems:'center',justifyContent:'center',gap:6,minWidth:mob?'calc(50% - 2px)':undefined,
                 background:tab===t.id?G:'transparent',color:tab===t.id?'#0C2540':'rgba(255,255,255,.3)'
               }}>
                 <span>{t.icon}</span><span>{t.label}</span>
@@ -247,6 +340,21 @@ export default function Settings() {
                 </form>
               )}
 
+              {/* TAB: المظهر */}
+              {tab==='theme' && (
+                <form onSubmit={save}>
+                  <Section title="ثيم المتجر" icon="🎨">
+                    <ThemePicker
+                      selected={form.theme}
+                      onSelect={t => setForm(f => ({...f, theme: t}))}
+                    />
+                  </Section>
+                  <button type="submit" disabled={saving} style={{width:'100%',padding:'13px',background:saving?'rgba(212,175,55,.4)':G,border:'none',color:'#0C2540',fontFamily:'Tajawal',fontWeight:900,fontSize:'.88rem',cursor:saving?'not-allowed':'pointer',transition:'all .2s'}}>
+                    {saving?'⏳ جاري الحفظ...':'✓ حفظ الثيم'}
+                  </button>
+                </form>
+              )}
+
               {/* TAB: الدفع */}
               {tab==='payment' && (
                 <form onSubmit={save}>
@@ -270,7 +378,7 @@ export default function Settings() {
                       <input value={form.fawryCode} onChange={e=>setForm({...form,fawryCode:e.target.value})} placeholder="كود الفوري الخاص بيك" dir="ltr" style={inp(form.fawryCode)} onFocus={e=>{e.target.style.borderColor=G;e.target.style.background='rgba(212,175,55,.05)'}} onBlur={e=>{e.target.style.borderColor=form.fawryCode?'rgba(212,175,55,.2)':'rgba(255,255,255,.07)';e.target.style.background=form.fawryCode?'rgba(212,175,55,.04)':'rgba(255,255,255,.03)'}}/>
                     </div>
                     <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-                      {[{l:'فودافون كاش',a:!!form.vodafoneCash},{l:'انستاباي',a:!!form.instapay},{l:'فوري',a:!!form.fawryCode},{l:'كارت بنكي',a:true},{l:'كاش عند الاستلام',a:true}].map(m=>(
+                      {[{l:'فودافون كاش',a:!!form.vodafoneCash},{l:'انستاباي',a:!!form.instapay},{l:'فوري',a:!!form.fawryCode},{l:'كاش عند الاستلام',a:true}].map(m=>(
                         <div key={m.l} style={{padding:'3px 10px',fontSize:'.6rem',fontWeight:700,background:m.a?'rgba(34,197,94,.08)':'rgba(255,255,255,.04)',border:`1px solid ${m.a?'rgba(34,197,94,.2)':'rgba(255,255,255,.08)'}`,color:m.a?'#86EFAC':'rgba(255,255,255,.2)'}}>
                           {m.a?'✓':'○'} {m.l}
                         </div>
@@ -293,7 +401,6 @@ export default function Settings() {
                         <span style={{fontSize:'.78rem',color:'#86EFAC',fontWeight:700}}>تليجرام مربوط ✓</span>
                         <span style={{fontSize:'.7rem',color:'rgba(255,255,255,.3)',marginRight:'auto'}}>ID: {tgChatId}</span>
                       </div>
-                      <div style={{fontSize:'.76rem',color:'rgba(255,255,255,.35)',marginBottom:16,lineHeight:1.7}}>هتوصلك إشعارات فورية على تليجرام مع كل طلب جديد.</div>
                       <button onClick={disconnectTg} disabled={tgSaving} style={{padding:'10px 20px',background:'transparent',border:'1px solid rgba(239,68,68,.25)',color:'#FCA5A5',fontFamily:'Tajawal',fontWeight:700,cursor:'pointer',fontSize:'.78rem'}}>
                         {tgSaving?'...':'✕ إلغاء الربط'}
                       </button>
@@ -342,6 +449,17 @@ export default function Settings() {
                     <div style={{fontSize:'.8rem',fontWeight:700,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.name||'اسم المتجر'}</div>
                   </div>
                 </div>
+                {/* Theme badge */}
+                {form.theme && (() => {
+                  const t = THEME_COLORS.find(x => x.key === form.theme)
+                  if (!t) return null
+                  return (
+                    <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:'rgba(212,175,55,.04)',border:'1px solid rgba(212,175,55,.1)',marginTop:12}}>
+                      <div style={{width:16,height:16,borderRadius:'50%',background:t.hex,border:'1.5px solid rgba(255,255,255,.2)',flexShrink:0}}/>
+                      <span style={{fontSize:'.7rem',color:G,fontWeight:700}}>اللون المختار: {t.nameAr}</span>
+                    </div>
+                  )
+                })()}
                 <div style={{fontSize:'.58rem',color:'rgba(255,255,255,.2)',marginBottom:6}}>رابط المتجر</div>
                 <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',padding:'8px 10px',fontSize:'.62rem',color:`${G}80`,direction:'ltr',wordBreak:'break-all',marginBottom:10}}>{storeUrl}</div>
                 <div style={{display:'flex',gap:6}}>
