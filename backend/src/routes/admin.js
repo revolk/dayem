@@ -8,6 +8,8 @@ const Order   = require('../models/Order');
 const Product = require('../models/Product');
 const Coupon  = require('../models/Coupon');
 
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // ── Admin Auth Middleware ─────────────────────────────────────────────────────
 const adminGuard = async (req, res, next) => {
   try {
@@ -50,7 +52,7 @@ router.get('/stats', adminGuard, async (req, res) => {
       User.countDocuments({ role: 'merchant' }),
       User.countDocuments({ role: 'merchant', isActive: true }),
       User.countDocuments({ role: 'merchant', 'store.plan': 'starter' }),
-      User.countDocuments({ role: 'merchant', 'store.plan': 'tajer' }),
+      User.countDocuments({ role: 'merchant', 'store.plan': 'merchant' }),
       User.countDocuments({ role: 'merchant', 'store.plan': 'pro' }),
       Order.countDocuments(),
       Order.aggregate([{ $match: { orderStatus: { $ne: 'cancelled' } } }, { $group: { _id: null, total: { $sum: '$finalPrice' } } }]),
@@ -97,11 +99,14 @@ router.get('/merchants', adminGuard, async (req, res) => {
   try {
     const { page = 1, limit = 20, search = '', plan = '', status = '' } = req.query;
     const query = { role: 'merchant' };
-    if (search) query.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-      { 'store.name': { $regex: search, $options: 'i' } },
-    ];
+    if (search) {
+      const safe = escapeRegex(search);
+      query.$or = [
+        { name: { $regex: safe, $options: 'i' } },
+        { email: { $regex: safe, $options: 'i' } },
+        { 'store.name': { $regex: safe, $options: 'i' } },
+      ];
+    }
     if (plan) query['store.plan'] = plan;
     if (status === 'active')   query.isActive = true;
     if (status === 'inactive') query.isActive = false;

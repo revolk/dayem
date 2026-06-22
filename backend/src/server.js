@@ -103,6 +103,7 @@ app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/coupons',   require('./routes/coupons'));
 app.use('/api/admin',     require('./routes/admin'));
 app.use('/api/customer',  require('./routes/customer'));
+app.use('/api/reviews',   require('./routes/reviews'));
 
 // ── Health check ──────────────────────────────────────────
 app.get('/health', (req, res) => res.json({
